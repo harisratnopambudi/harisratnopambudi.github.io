@@ -45,6 +45,6 @@ export const PRODUCTS = [
             loginHotspot2Img3,
             loginHotspot2Img4
         ],
-        features: ["DESAIN PREMIUM MODERN", "SISTEM PROTEKSI LISENSI", "KUSTOMISASI MUDAH", "5 HALAMAN LENGKAP", "100% KOMPATIBEL MIKROTIK", "FITUR KEAMANAN EKSTRA"]
+        features: ["Desain Premium Modern", "Sistem Proteksi Lisensi", "Kustomisasi Mudah", "5 Halaman Lengkap", "100% Kompatibel MikroTik", "Fitur Keamanan Ekstra"]
     }
 ];
