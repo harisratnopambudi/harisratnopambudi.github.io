@@ -80,7 +80,7 @@ export const ProductDetail = () => {
 
                     {/* Thumbnails */}
                     {images.length > 1 && (
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-4 gap-4">
                             {images.map((img, idx) => (
                                 <button
                                     key={idx}
