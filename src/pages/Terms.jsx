@@ -16,38 +16,53 @@ export const Terms = () => {
                 </p>
             </div>
 
-            <div className="prose prose-lg prose-blue mx-auto bg-white p-8 md:p-12 rounded-2xl border border-gray-100 shadow-sm space-y-8">
+            <div className="bg-white p-8 md:p-12 rounded-2xl border border-gray-100 shadow-sm space-y-10">
                 <section>
-                    <h3 className="mb-3">1. Introduction</h3>
-                    <p className="leading-relaxed">
+                    <div className="flex items-center gap-3 mb-4">
+                        <span className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">1</span>
+                        <h3 className="text-xl font-semibold text-gray-900 m-0">Introduction</h3>
+                    </div>
+                    <p className="text-gray-600 leading-relaxed pl-11 text-justify">
                         Welcome to Haris DevLab Co. By accessing our website and purchasing our digital products, you agree to be bound by these Terms and Conditions.
                     </p>
                 </section>
 
                 <section>
-                    <h3 className="mb-3">2. Digital Products</h3>
-                    <p className="leading-relaxed">
+                    <div className="flex items-center gap-3 mb-4">
+                        <span className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">2</span>
+                        <h3 className="text-xl font-semibold text-gray-900 m-0">Digital Products</h3>
+                    </div>
+                    <p className="text-gray-600 leading-relaxed pl-11 text-justify">
                         All products listed are digital assets (software, templates, scripts). Upon purchase, you will receive a license to use the product according to the specific license terms mentioned on the product page.
                     </p>
                 </section>
 
                 <section>
-                    <h3 className="mb-3">3. Refund Policy</h3>
-                    <p className="leading-relaxed">
-                        Due to the nature of digital products, <strong>all sales are final</strong>. We do not offer refunds once the product files have been downloaded or sent, unless the product is technically defective and cannot be fixed by our support team.
+                    <div className="flex items-center gap-3 mb-4">
+                        <span className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">3</span>
+                        <h3 className="text-xl font-semibold text-gray-900 m-0">Refund Policy</h3>
+                    </div>
+                    <p className="text-gray-600 leading-relaxed pl-11 text-justify">
+                        Due to the nature of digital products, <strong className="text-gray-800">all sales are final</strong>. We do not offer refunds once the product files have been downloaded or sent, unless the product is technically defective and cannot be fixed by our support team.
                     </p>
                 </section>
 
                 <section>
-                    <h3 className="mb-3">4. Support</h3>
-                    <p className="leading-relaxed">
+                    <div className="flex items-center gap-3 mb-4">
+                        <span className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">4</span>
+                        <h3 className="text-xl font-semibold text-gray-900 m-0">Support</h3>
+                    </div>
+                    <p className="text-gray-600 leading-relaxed pl-11 text-justify">
                         We provide technical support for the installation and configuration of our products for 6 months from the date of purchase. Customization requests may incur additional fees.
                     </p>
                 </section>
 
                 <section>
-                    <h3 className="mb-3">5. License Usage</h3>
-                    <p className="leading-relaxed">
+                    <div className="flex items-center gap-3 mb-4">
+                        <span className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">5</span>
+                        <h3 className="text-xl font-semibold text-gray-900 m-0">License Usage</h3>
+                    </div>
+                    <p className="text-gray-600 leading-relaxed pl-11 text-justify">
                         You may not resell, redistribute, or share our products in their original or modified form to third parties without explicit written permission.
                     </p>
                 </section>
