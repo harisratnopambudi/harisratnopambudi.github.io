@@ -26,7 +26,7 @@ export const Contact = () => {
                                 </div>
                                 <div>
                                     <h4 className="font-medium text-gray-900">Email</h4>
-                                    <p className="text-gray-500">support@harisdevlab.co</p>
+                                    <p className="text-gray-500">harisratnopambudi@gmail.com</p>
                                 </div>
                             </div>
                             <div className="flex items-start">
@@ -35,7 +35,7 @@ export const Contact = () => {
                                 </div>
                                 <div>
                                     <h4 className="font-medium text-gray-900">WhatsApp</h4>
-                                    <p className="text-gray-500">+62 812-3456-7890</p>
+                                    <p className="text-gray-500">+62 877-8447-7751</p>
                                 </div>
                             </div>
                             <div className="flex items-start">
@@ -44,7 +44,7 @@ export const Contact = () => {
                                 </div>
                                 <div>
                                     <h4 className="font-medium text-gray-900">Office</h4>
-                                    <p className="text-gray-500">Jakarta, Indonesia</p>
+                                    <p className="text-gray-500">Purwakarta, West Java Indonesia</p>
                                 </div>
                             </div>
                         </div>
