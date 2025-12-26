@@ -22,8 +22,6 @@ export const Footer = () => {
 
                     <div className="text-sm text-gray-400 flex items-center gap-1">
                         &copy; {new Date().getFullYear()} Made with <Heart size={14} className="fill-red-500 text-red-500" />
-                        <span className="mx-2">•</span>
-                        <Link to="/admin" className="hover:text-gray-600 transition-colors">Admin</Link>
                     </div>
                 </div>
             </div>

@@ -4,6 +4,38 @@ import { Button } from '../components/ui/Button';
 import { Plus, Trash2, Copy, Check } from 'lucide-react';
 
 export const Admin = () => {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [password, setPassword] = useState('');
+
+    // Simple protection
+    const handleLogin = (e) => {
+        e.preventDefault();
+        if (password === 'haris123') { // Hardcoded simple password
+            setIsAuthenticated(true);
+        } else {
+            alert('Password salah!');
+        }
+    };
+
+    if (!isAuthenticated) {
+        return (
+            <div className="min-h-[60vh] flex items-center justify-center px-4">
+                <form onSubmit={handleLogin} className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 max-w-md w-full">
+                    <h2 className="text-2xl font-bold text-center mb-6">Restricted Access</h2>
+                    <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="w-full border p-3 rounded-xl mb-4"
+                        placeholder="Admin Password"
+                        autoFocus
+                    />
+                    <Button className="w-full justify-center">Login</Button>
+                </form>
+            </div>
+        );
+    }
+
     const [product, setProduct] = useState({
         id: Date.now(),
         title: '',
