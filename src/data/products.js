@@ -3,6 +3,11 @@ import loginHotspot1Img2 from '../assets/products/loginhotspot1/img2.jpg';
 import loginHotspot1Img3 from '../assets/products/loginhotspot1/img3.jpg';
 import loginHotspot1Img4 from '../assets/products/loginhotspot1/img4.jpg';
 
+import loginHotspot2Main from '../assets/products/loginhotspot2/main.jpg';
+import loginHotspot2Img2 from '../assets/products/loginhotspot2/img2.jpg';
+import loginHotspot2Img3 from '../assets/products/loginhotspot2/img3.jpg';
+import loginHotspot2Img4 from '../assets/products/loginhotspot2/img4.jpg';
+
 export const PRODUCTS = [
     {
         id: 1766714059553,
@@ -22,5 +27,24 @@ export const PRODUCTS = [
             loginHotspot1Img4
         ],
         features: ["Desain Premium Glassmorphism", "Mode Login Fleksibel (Configurable)", "Sistem Proteksi & Lisensi Terintegrasi", "Interaksi Pengguna yang Responsif (UX)", "Integrasi WhatsApp Support", "Konfigurasi Terpusat"]
+    },
+    {
+        id: 1766733197898,
+        title: "LoginHotspot2",
+        price: 25000,
+        originalPrice: 50000,
+        category: "Captive Login",
+        domain: "Offline License",
+        shortDesc: "Template Hotspot Login MikroTik Premium - Desain Modern, Proteksi Lisensi, Kustomisasi Mudah",
+        desc: "Template halaman login hotspot MikroTik dengan tampilan modern dan profesional! Cocok untuk RT/RW Net, Kafe, Kos-kosan, Hotel, Warnet, dan semua usaha WiFi.",
+        demoUrl: "https://harisratnopambudi.github.io/loginhotspot2/login.html",
+        img: loginHotspot2Main,
+        images: [
+            loginHotspot2Main,
+            loginHotspot2Img2,
+            loginHotspot2Img3,
+            loginHotspot2Img4
+        ],
+        features: ["DESAIN PREMIUM MODERN", "SISTEM PROTEKSI LISENSI", "KUSTOMISASI MUDAH", "5 HALAMAN LENGKAP", "100% KOMPATIBEL MIKROTIK", "FITUR KEAMANAN EKSTRA"]
     }
 ];
