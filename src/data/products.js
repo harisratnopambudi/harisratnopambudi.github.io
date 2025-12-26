@@ -95,7 +95,7 @@ export const PRODUCTS = [
         category: "Captive Login",
         domain: "Offline License",
         shortDesc: "Template Login Hotspot MikroTik premium dengan desain Glassmorphism modern, responsif, dan dilengkapi sistem proteksi lisensi serta mode login fleksibel (Voucher/Member).",
-        desc: "LoginHotspot1 adalah template Captive Portal MikroTik profesional yang dirancang untuk memberikan pengalaman login WiFi yang mewah dan mudah digunakan. Dibangun dengan antarmuka Glassmorphism yang estetik, template ini tidak hanya memanjakan mata tetapi juga ringan dan responsif di berbagai ukuran perangkat.\n\nFitur utamanya mencakup fleksibilitas mode login (Voucher atau Member/User-Pass) yang dapat dikonfigurasi dengan mudah, serta integrasi sistem keamanan lisensi canggih untuk mencegah pembajakan. Template ini juga dilengkapi dengan umpan balik interaktif seperti notifikasi toast, indikator loading, dan tombol bantuan WhatsApp langsung, menjadikannya solusi lengkap untuk pemilik bisnis hotspot yang mengutamakan kualitas dan keamanan.",
+        desc: "LoginHotspot1 adalah template Captive Portal MikroTik berdesain premium dengan tampilan Glassmorphism (glass effect modern). Ukurannya ringan, responsif di HP, tablet, dan desktop. Mendukung login via voucher atau member (user-pass) yang mudah diatur di file konfigurasi. Dilengkapi toast notifikasi, loading indikator, dan tombol bantuan WhatsApp, plus sistem lisensi offline untuk mencegah penggunaan ilegal. Cocok untuk bisnis hotspot yang ingin terlihat elegan, tetap cepat, dan aman.",
         demoUrl: "https://harisratnopambudi.github.io/loginhotspot1/login.html",
         img: loginHotspot1Main,
         images: [
