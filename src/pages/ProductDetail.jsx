@@ -65,7 +65,7 @@ export const ProductDetail = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
                 {/* Product Image Section */}
-                <div className="w-full grid grid-cols-1 lg:grid-cols-[3fr_1fr] gap-4">
+                <div className="w-full grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-4">
                     {/* Main Image */}
                     <div className="h-full bg-white rounded-3xl overflow-hidden shadow-2xl shadow-gray-200 border border-gray-100 p-2">
                         <div className="bg-gray-50 w-full h-full rounded-2xl overflow-hidden relative group">
