@@ -7,9 +7,12 @@ import { Contact } from './pages/Contact';
 import { Terms } from './pages/Terms';
 import { Admin } from './pages/Admin';
 
+// Set basename based on environment for GitHub Pages
+const basename = import.meta.env.MODE === 'production' ? '/harisdevlab' : '/';
+
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Catalog />} />
