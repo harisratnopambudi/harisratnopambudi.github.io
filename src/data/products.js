@@ -1,3 +1,8 @@
+import loginHotspot1Main from '../assets/products/loginhotspot1/main.jpg';
+import loginHotspot1Img2 from '../assets/products/loginhotspot1/img2.jpg';
+import loginHotspot1Img3 from '../assets/products/loginhotspot1/img3.jpg';
+import loginHotspot1Img4 from '../assets/products/loginhotspot1/img4.jpg';
+
 export const PRODUCTS = [
     {
         id: 1,
@@ -92,12 +97,12 @@ export const PRODUCTS = [
         shortDesc: "Template Login Hotspot MikroTik premium dengan desain Glassmorphism modern, responsif, dan dilengkapi sistem proteksi lisensi serta mode login fleksibel (Voucher/Member).",
         desc: "LoginHotspot1 adalah template Captive Portal MikroTik profesional yang dirancang untuk memberikan pengalaman login WiFi yang mewah dan mudah digunakan. Dibangun dengan antarmuka Glassmorphism yang estetik, template ini tidak hanya memanjakan mata tetapi juga ringan dan responsif di berbagai ukuran perangkat.\n\nFitur utamanya mencakup fleksibilitas mode login (Voucher atau Member/User-Pass) yang dapat dikonfigurasi dengan mudah, serta integrasi sistem keamanan lisensi canggih untuk mencegah pembajakan. Template ini juga dilengkapi dengan umpan balik interaktif seperti notifikasi toast, indikator loading, dan tombol bantuan WhatsApp langsung, menjadikannya solusi lengkap untuk pemilik bisnis hotspot yang mengutamakan kualitas dan keamanan.",
         demoUrl: "https://harisratnopambudi.github.io/loginhotspot1/login.html",
-        img: "https://drive.google.com/uc?export=view&id=1i32_QR4KsogcFBS49j147lb0-d1ZEG1r",
+        img: loginHotspot1Main,
         images: [
-            "https://drive.google.com/uc?export=view&id=1i32_QR4KsogcFBS49j147lb0-d1ZEG1r",
-            "https://drive.google.com/uc?export=view&id=1TCIsvZPBRWjOkwGQHlv7Tkl29y8VjK1h",
-            "https://drive.google.com/uc?export=view&id=15oxkRr1KJl-REtOZlrYaski9i5h-oHFA",
-            "https://drive.google.com/uc?export=view&id=1CtAIEUGMKOQ4yrWWLD741WtaCJZew2xc"
+            loginHotspot1Main,
+            loginHotspot1Img2,
+            loginHotspot1Img3,
+            loginHotspot1Img4
         ],
         features: ["Desain Premium Glassmorphism", "Mode Login Fleksibel (Configurable)", "Sistem Proteksi & Lisensi Terintegrasi", "Interaksi Pengguna yang Responsif (UX)", "Integrasi WhatsApp Support", "Konfigurasi Terpusat"]
     }
