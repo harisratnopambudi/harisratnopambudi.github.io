@@ -67,7 +67,7 @@ export const ProductDetail = () => {
                 {/* Product Image Section */}
                 <div className="w-full space-y-4">
                     {/* Main Image */}
-                    <div className="aspect-video bg-white rounded-3xl overflow-hidden shadow-2xl shadow-gray-200 border border-gray-100 p-2">
+                    <div className="aspect-[3/4] bg-white rounded-3xl overflow-hidden shadow-2xl shadow-gray-200 border border-gray-100 p-2">
                         <div className="bg-gray-50 w-full h-full rounded-2xl overflow-hidden relative group">
                             <img
                                 key={selectedImage} // Force re-render for animation if needed, or remove for smooth transition
