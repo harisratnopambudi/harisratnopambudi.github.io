@@ -7,6 +7,24 @@ export const Admin = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [password, setPassword] = useState('');
 
+    // STATE MUST BE AT TOP LEVEL (Rules of Hooks)
+    const [product, setProduct] = useState({
+        id: Date.now(),
+        title: '',
+        price: '',
+        originalPrice: '',
+        category: '',
+        domain: '',
+        demoUrl: '',
+        shortDesc: '',
+        desc: '',
+        img: 'https://placehold.co/600x338/2563eb/ffffff?text=Thumbnail',
+        images: ['https://placehold.co/600x338/2563eb/ffffff?text=Thumbnail'],
+        features: ['']
+    });
+
+    const [copied, setCopied] = useState(false);
+
     // Simple protection
     const handleLogin = (e) => {
         e.preventDefault();
@@ -15,6 +33,11 @@ export const Admin = () => {
         } else {
             alert('Password salah!');
         }
+    };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setProduct(prev => ({ ...prev, [name]: value }));
     };
 
     if (!isAuthenticated) {
@@ -35,28 +58,6 @@ export const Admin = () => {
             </div>
         );
     }
-
-    const [product, setProduct] = useState({
-        id: Date.now(),
-        title: '',
-        price: '',
-        originalPrice: '',
-        category: '',
-        domain: '',
-        demoUrl: '',
-        shortDesc: '',
-        desc: '',
-        img: 'https://placehold.co/600x338/2563eb/ffffff?text=Thumbnail',
-        images: ['https://placehold.co/600x338/2563eb/ffffff?text=Thumbnail'],
-        features: ['']
-    });
-
-    const [copied, setCopied] = useState(false);
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setProduct(prev => ({ ...prev, [name]: value }));
-    };
 
     const convertDriveLink = (url) => {
         if (url && url.includes('drive.google.com') && url.includes('/view')) {
