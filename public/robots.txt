@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://harisdevlab.online/sitemap.xml
