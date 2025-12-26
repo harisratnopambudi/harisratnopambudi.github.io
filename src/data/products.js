@@ -36,7 +36,7 @@ export const PRODUCTS = [
         category: "Captive Login",
         domain: "Offline License",
         shortDesc: "Template Hotspot Login MikroTik Premium - Desain Modern, Proteksi Lisensi, Kustomisasi Mudah",
-        desc: "Template halaman login hotspot MikroTik dengan tampilan modern dan profesional! Cocok untuk RT/RW Net, Kafe, Kos-kosan, Hotel, Warnet, dan semua usaha WiFi.",
+        desc: "Halaman login hotspot ini dibuat sebagai portal WiFi yang modern, profesional, dan ringan, menghadirkan sistem login berbasis license key dengan halaman status real-time (durasi sesi, sisa waktu/kuota, serta tombol logout), ditambah menu informatif seperti info layanan, kontak WhatsApp dukungan, dan panduan singkat penggunaan—semuanya dikemas dengan tata letak responsif, animasi mikro yang halus, serta waktu muat cepat, sehingga cocok untuk RT/RW Net, kafe, kos, hotel, dan berbagai usaha WiFi yang ingin memberi kesan premium tanpa membebani koneksi.",
         demoUrl: "https://harisratnopambudi.github.io/loginhotspot2/login.html",
         img: loginHotspot2Main,
         images: [
