@@ -138,7 +138,7 @@ export const ProductDetail = () => {
                         <p>{product.desc}</p>
                     </div>
 
-                    <div className="mb-10 bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
+                    <div className="mb-6 bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
                         <h3 className="font-bold text-gray-900 mb-4 text-lg">Product Features</h3>
                         <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             {product.features.map((feature, idx) => (
@@ -152,7 +152,7 @@ export const ProductDetail = () => {
                         </ul>
                     </div>
 
-                    <div className="mt-auto flex flex-col sm:flex-row gap-4">
+                    <div className="flex flex-col sm:flex-row gap-4">
                         <Button
                             onClick={handleOrder}
                             className="flex-1 py-4 text-base shadow-xl shadow-blue-600/20 hover:shadow-blue-600/30 transform hover:-translate-y-1"
