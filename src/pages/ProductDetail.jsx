@@ -134,7 +134,7 @@ export const ProductDetail = () => {
                         </span>
                     </div>
 
-                    <div className="prose prose-lg text-gray-600 mb-8 leading-relaxed">
+                    <div className="prose prose-lg text-gray-600 mb-8 leading-relaxed text-justify">
                         <p>{product.desc}</p>
                     </div>
 
