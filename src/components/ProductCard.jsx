@@ -14,15 +14,37 @@ export const ProductCard = ({ product }) => {
         <Link to={`/product/${product.id}`} className="group block h-full">
             <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-blue-900/5 hover:-translate-y-1 h-full flex flex-col cursor-pointer">
                 {/* Thumbnail */}
-                <div className="relative aspect-video overflow-hidden bg-gray-100">
-                    <img
-                        src={product.img}
-                        alt={product.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        loading="lazy"
-                    />
+                <div className="relative aspect-video overflow-hidden bg-gray-100 flex">
+                    {product.images && product.images.length >= 2 ? (
+                        <>
+                            <div className="w-1/2 h-full relative border-r border-white/10">
+                                <img
+                                    src={product.images[0]}
+                                    alt={`${product.title} 1`}
+                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                    loading="lazy"
+                                />
+                            </div>
+                            <div className="w-1/2 h-full relative">
+                                <img
+                                    src={product.images[1]}
+                                    alt={`${product.title} 2`}
+                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                    loading="lazy"
+                                />
+                            </div>
+                        </>
+                    ) : (
+                        <img
+                            src={product.img}
+                            alt={product.title}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            loading="lazy"
+                        />
+                    )}
+
                     {/* Badge */}
-                    <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold text-blue-700 shadow-sm border border-blue-100">
+                    <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold text-blue-700 shadow-sm border border-blue-100 z-10">
                         {product.category}
                     </div>
                 </div>
