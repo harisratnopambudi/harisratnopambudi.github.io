@@ -1,0 +1,11 @@
+CARA MEMASUKKAN GAMBAR PRODUK:
+
+1.  Simpan file gambar Anda (JPG/PNG) di dalam folder ini (`public/products`).
+    Contoh: `public/products/mikrotik-1.jpg`
+
+2.  Saat membuat produk (di Admin Generator atau edit manual), gunakan link berikut:
+    `/products/mikrotik-1.jpg`
+
+    (Perhatikan: Jangan sertakan kata 'public', langsung mulai dari slash '/')
+
+3.  Saat Anda upload ke GitHub, folder ini akan ikut ter-upload, sehingga gambar akan tampil otomatis di website.
