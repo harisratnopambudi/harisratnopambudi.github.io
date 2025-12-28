@@ -2,40 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { PRODUCTS } from '../data/products';
 import { Button } from '../components/ui/Button';
-import { ArrowLeft, Check, ShoppingCart, Share2, Smartphone, Tablet, Monitor } from 'lucide-react';
-import { DeviceFrame } from '../components/DeviceFrame';
+import { ArrowLeft, Check, ShoppingCart, Share2 } from 'lucide-react';
 
 export const ProductDetail = () => {
     const { id } = useParams();
     const product = PRODUCTS.find(p => p.id === parseInt(id));
-    const [deviceType, setDeviceType] = useState('desktop');
-    const [repoSize, setRepoSize] = useState(null);
+    const [selectedImage, setSelectedImage] = useState(0);
 
     // Scroll to top on mount
     useEffect(() => {
         window.scrollTo(0, 0);
-        setRepoSize(null);
-
-        // Fetch Repo Size if githubRepo is defined
-        if (product && product.githubRepo) {
-            fetch(`https://api.github.com/repos/${product.githubRepo}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.size) {
-                        // Size is in KB. Convert to MB if > 1024 KB
-                        const sizeKB = data.size;
-                        let formattedSize = '';
-                        if (sizeKB > 1024) {
-                            formattedSize = `${(sizeKB / 1024).toFixed(1)} MB`;
-                        } else {
-                            formattedSize = `${sizeKB} KB`;
-                        }
-                        setRepoSize(formattedSize);
-                    }
-                })
-                .catch(err => console.error("Failed to fetch repo size:", err));
-        }
-    }, [id, product]);
+        setSelectedImage(0); // Reset image on product change
+    }, [id]);
 
     if (!product) {
         return (
@@ -48,6 +26,9 @@ export const ProductDetail = () => {
             </div>
         );
     }
+
+    // Ensure we have an array of images; fallback to [product.img] if no array
+    const images = product.images && product.images.length > 0 ? product.images : [product.img];
 
     const price = new Intl.NumberFormat('id-ID', {
         style: 'currency',
@@ -84,36 +65,42 @@ export const ProductDetail = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
                 {/* Product Image Section */}
-                <div className="w-full">
-                    {/* Device Toggles */}
-                    <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-semibold text-gray-900">Live Preview</h3>
-                        <div className="flex space-x-2 bg-gray-100 p-1 rounded-lg">
-                            <button
-                                onClick={() => setDeviceType('mobile')}
-                                className={`p-2 rounded-lg transition-colors ${deviceType === 'mobile' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-                                title="Mobile View"
-                            >
-                                <Smartphone size={20} />
-                            </button>
-                            <button
-                                onClick={() => setDeviceType('tablet')}
-                                className={`p-2 rounded-lg transition-colors ${deviceType === 'tablet' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-                                title="Tablet View"
-                            >
-                                <Tablet size={20} />
-                            </button>
-                            <button
-                                onClick={() => setDeviceType('desktop')}
-                                className={`p-2 rounded-lg transition-colors ${deviceType === 'desktop' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-                                title="Desktop View"
-                            >
-                                <Monitor size={20} />
-                            </button>
+                <div className="w-full grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-4">
+                    {/* Main Image */}
+                    <div className="h-full bg-white rounded-3xl overflow-hidden shadow-2xl shadow-gray-200 border border-gray-100 p-2">
+                        <div className="bg-gray-50 w-full h-full rounded-2xl overflow-hidden relative group">
+                            <img
+                                key={selectedImage} // Force re-render for animation if needed, or remove for smooth transition
+                                src={images[selectedImage]}
+                                alt={product.title}
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                            />
                         </div>
                     </div>
 
-                    <DeviceFrame url={product.demoUrl} device={deviceType} />
+                    {/* Thumbnails */}
+                    {images.length > 1 && (
+                        <div className="grid grid-cols-1 gap-4">
+                            {images.map((img, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => setSelectedImage(idx)}
+                                    className={`aspect-square rounded-2xl overflow-hidden border-2 transition-all p-1 ${selectedImage === idx
+                                        ? 'border-blue-600 shadow-md ring-2 ring-blue-100'
+                                        : 'border-transparent hover:border-gray-300'
+                                        }`}
+                                >
+                                    <div className="w-full h-full rounded-xl overflow-hidden">
+                                        <img
+                                            src={img}
+                                            alt={`${product.title} ${idx + 1}`}
+                                            className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
+                                        />
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 {/* Product Info */}
@@ -125,11 +112,6 @@ export const ProductDetail = () => {
                         <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border border-gray-200">
                             {product.domain}
                         </span>
-                        {repoSize && (
-                            <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border border-orange-200">
-                                Size: {repoSize}
-                            </span>
-                        )}
                     </div>
 
                     <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight leading-tight">
