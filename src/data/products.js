@@ -32,6 +32,7 @@ export const PRODUCTS = [
             loginHotspot3Img4
         ],
         githubRepo: "harisratnopambudi/loginhotspot3",
+        size: "48 KB",
         features: ["Banner Smart Time Greeting", "Dynamic Package Display", "Integrated Prayer Widget", "Modern Split-Sheet UI", "Banner Holiday & Event Aware", "100% Offline Capability"]
     },
     {
@@ -52,6 +53,7 @@ export const PRODUCTS = [
             loginHotspot2Img4
         ],
         githubRepo: "harisratnopambudi/loginhotspot2",
+        size: "907 KB",
         features: ["Desain Premium Modern", "Sistem Proteksi Lisensi", "Kustomisasi Mudah", "5 Halaman Lengkap", "100% Kompatibel MikroTik", "Fitur Keamanan Ekstra"]
     },
     {
@@ -72,6 +74,7 @@ export const PRODUCTS = [
             loginHotspot1Img4
         ],
         githubRepo: "harisratnopambudi/loginhotspot1",
+        size: "40 KB",
         features: ["Desain Premium Glassmorphism", "Mode Login Fleksibel (Configurable)", "Sistem Proteksi & Lisensi Terintegrasi", "Interaksi Pengguna yang Responsif (UX)", "Integrasi WhatsApp Support", "Konfigurasi Terpusat"]
     }
 ];
