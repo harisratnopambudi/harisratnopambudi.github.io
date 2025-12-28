@@ -8,12 +8,34 @@ export const ProductDetail = () => {
     const { id } = useParams();
     const product = PRODUCTS.find(p => p.id === parseInt(id));
     const [selectedImage, setSelectedImage] = useState(0);
+    const [repoSize, setRepoSize] = useState(null);
 
     // Scroll to top on mount
     useEffect(() => {
         window.scrollTo(0, 0);
         setSelectedImage(0); // Reset image on product change
-    }, [id]);
+        setRepoSize(null);
+
+        // Fetch Repo Size if githubRepo is defined
+        if (product && product.githubRepo) {
+            fetch(`https://api.github.com/repos/${product.githubRepo}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.size) {
+                        // Size is in KB. Convert to MB if > 1024 KB
+                        const sizeKB = data.size;
+                        let formattedSize = '';
+                        if (sizeKB > 1024) {
+                            formattedSize = `${(sizeKB / 1024).toFixed(1)} MB`;
+                        } else {
+                            formattedSize = `${sizeKB} KB`;
+                        }
+                        setRepoSize(formattedSize);
+                    }
+                })
+                .catch(err => console.error("Failed to fetch repo size:", err));
+        }
+    }, [id, product]);
 
     if (!product) {
         return (
@@ -112,6 +134,11 @@ export const ProductDetail = () => {
                         <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border border-gray-200">
                             {product.domain}
                         </span>
+                        {repoSize && (
+                            <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border border-orange-200">
+                                Size: {repoSize}
+                            </span>
+                        )}
                     </div>
 
                     <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight leading-tight">
