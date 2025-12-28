@@ -31,6 +31,7 @@ export const PRODUCTS = [
             loginHotspot3Img3,
             loginHotspot3Img4
         ],
+        githubRepo: "harisratnopambudi/loginhotspot3",
         features: ["Banner Smart Time Greeting", "Dynamic Package Display", "Integrated Prayer Widget", "Modern Split-Sheet UI", "Banner Holiday & Event Aware", "100% Offline Capability"]
     },
     {

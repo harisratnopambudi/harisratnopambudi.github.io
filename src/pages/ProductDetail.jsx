@@ -17,7 +17,9 @@ export const ProductDetail = () => {
         setRepoSize(null);
 
         // Fetch Repo Size if githubRepo is defined
-        if (product && product.githubRepo) {
+        if (product && product.size) {
+            setRepoSize(product.size);
+        } else if (product && product.githubRepo) {
             fetch(`https://api.github.com/repos/${product.githubRepo}`)
                 .then(res => res.json())
                 .then(data => {
