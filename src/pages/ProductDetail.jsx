@@ -60,7 +60,7 @@ export const ProductDetail = () => {
     }).format(product.price);
 
     const handleOrder = () => {
-        const message = `Halo Haris DevLab Co., saya ingin membeli produk "${product.title}" seharga ${price}. Mohon infonya.`;
+        const message = `Halo Haris DevLab, saya ingin membeli produk "${product.title}" seharga ${price}. Mohon infonya.`;
         const waUrl = `https://wa.me/6287784477751?text=${encodeURIComponent(message)}`;
         window.open(waUrl, '_blank');
     };
@@ -69,7 +69,7 @@ export const ProductDetail = () => {
         if (navigator.share) {
             navigator.share({
                 title: product.title,
-                text: `Cek produk ${product.title} di Haris DevLab Co.!`,
+                text: `Cek produk ${product.title} di Haris DevLab!`,
                 url: window.location.href,
             });
         } else {

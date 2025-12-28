@@ -25,7 +25,7 @@ export const Navbar = () => {
                             <ShoppingBag size={18} />
                         </div>
                         <span className="font-bold text-xl tracking-tight text-gray-900">
-                            Haris <span className="text-blue-600">DevLab Co.</span>
+                            Haris <span className="text-blue-600">DevLab</span>
                         </span>
                     </Link>
 

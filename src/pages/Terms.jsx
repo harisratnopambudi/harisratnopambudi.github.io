@@ -23,7 +23,7 @@ export const Terms = () => {
                         <h3 className="text-xl font-semibold text-gray-900 m-0">Introduction</h3>
                     </div>
                     <p className="text-gray-600 leading-relaxed pl-11 text-justify">
-                        Welcome to Haris DevLab Co. By accessing our website and purchasing our digital products, you agree to be bound by these Terms and Conditions.
+                        Welcome to Haris DevLab. By accessing our website and purchasing our digital products, you agree to be bound by these Terms and Conditions.
                     </p>
                 </section>
 
