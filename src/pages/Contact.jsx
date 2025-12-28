@@ -3,6 +3,26 @@ import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 
 export const Contact = () => {
+    const [formData, setFormData] = React.useState({
+        name: '',
+        email: '',
+        subject: '',
+        message: ''
+    });
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSendMessage = (e) => {
+        e.preventDefault();
+        const { name, email, subject, message } = formData;
+
+        const mailtoLink = `mailto:harisratnopambudi@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`)}`;
+
+        window.location.href = mailtoLink;
+    };
+
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div className="text-center mb-12 animate-fade-in-up">
@@ -54,22 +74,30 @@ export const Contact = () => {
                 {/* Contact Form */}
                 <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-lg shadow-blue-900/5">
                     <h3 className="text-xl font-bold text-gray-900 mb-6">Send Message</h3>
-                    <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                    <form className="space-y-4" onSubmit={handleSendMessage}>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
                                 <input
                                     type="text"
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleChange}
                                     className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
                                     placeholder="Your Name"
+                                    required
                                 />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                                 <input
                                     type="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
                                     className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
                                     placeholder="Your Email"
+                                    required
                                 />
                             </div>
                         </div>
@@ -77,19 +105,27 @@ export const Contact = () => {
                             <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
                             <input
                                 type="text"
+                                name="subject"
+                                value={formData.subject}
+                                onChange={handleChange}
                                 className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
                                 placeholder="Inquiry about..."
+                                required
                             />
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
                             <textarea
+                                name="message"
+                                value={formData.message}
+                                onChange={handleChange}
                                 rows="4"
                                 className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all resize-none"
                                 placeholder="How can we help?"
+                                required
                             ></textarea>
                         </div>
-                        <Button className="w-full justify-center">
+                        <Button className="w-full justify-center" type="submit">
                             <Send size={18} className="mr-2" />
                             Send Message
                         </Button>

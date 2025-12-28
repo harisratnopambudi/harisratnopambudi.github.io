@@ -26,6 +26,7 @@ export const PRODUCTS = [
             loginHotspot2Img3,
             loginHotspot2Img4
         ],
+        githubRepo: "harisratnopambudi/loginhotspot2",
         features: ["Desain Premium Modern", "Sistem Proteksi Lisensi", "Kustomisasi Mudah", "5 Halaman Lengkap", "100% Kompatibel MikroTik", "Fitur Keamanan Ekstra"]
     },
     {
@@ -45,6 +46,7 @@ export const PRODUCTS = [
             loginHotspot1Img3,
             loginHotspot1Img4
         ],
+        githubRepo: "harisratnopambudi/loginhotspot1",
         features: ["Desain Premium Glassmorphism", "Mode Login Fleksibel (Configurable)", "Sistem Proteksi & Lisensi Terintegrasi", "Interaksi Pengguna yang Responsif (UX)", "Integrasi WhatsApp Support", "Konfigurasi Terpusat"]
     }
 ];
