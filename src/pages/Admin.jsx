@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ProductCard } from '../components/ProductCard';
 import { Button } from '../components/ui/Button';
-import { Plus, Trash2, Copy, Check } from 'lucide-react';
+import { Plus, Trash2, Copy, Check, Download, Loader2 } from 'lucide-react';
+import html2canvas from 'html2canvas';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 export const Admin = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
