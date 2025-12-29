@@ -101,10 +101,10 @@ export const ProductDetail = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
                 {/* Product Image Section */}
-                <div className="w-full grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-4">
+                <div className="w-full">
                     {/* Main Image */}
                     {/* Main Image with iPhone XR Mockup */}
-                    <div className="flex justify-center">
+                    <div className="flex justify-center lg:justify-end lg:pr-10">
                         <div className="relative mx-auto border-gray-800 bg-gray-800 border-[14px] rounded-[2.5rem] h-[672px] w-[310px] shadow-xl">
                             <div className="w-[148px] h-[18px] bg-gray-800 top-0 rounded-b-[1rem] left-1/2 -translate-x-1/2 absolute z-10"></div>
                             <div className="h-[32px] w-[3px] bg-gray-800 absolute -left-[17px] top-[72px] rounded-l-lg"></div>
