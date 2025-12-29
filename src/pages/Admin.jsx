@@ -5,6 +5,7 @@ import { Plus, Trash2, Copy, Check, Download, Loader2, Mail } from 'lucide-react
 import html2canvas from 'html2canvas';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+import { SAVED_LINKS } from '../data/savedLinks';
 
 // CONFIGURATION & SECRETS
 const _0x4f2a = ['M', 'i', 'k', 'r', 'o', 't', 'i', 'k', 'A', 'd', 'm', 'i', 'n', 'S', 'e', 'c', 'r', 'e', 't', 'K', 'e', 'y', '2', '0', '2', '5', '!', '@', '#'];
@@ -112,6 +113,7 @@ export const Admin = () => {
     const [isGenerating, setIsGenerating] = useState(false); // New state for key generation
     const [captureStatus, setCaptureStatus] = useState('');
     const iframeRef = useRef(null);
+
 
     // Simple protection
     const handleLogin = (e) => {
@@ -603,13 +605,25 @@ export const Admin = () => {
 
                             <div>
                                 <label className="block text-sm font-medium mb-1">Product Name</label>
-                                <input
+                                <select
                                     name="productName"
                                     value={emailData.productName}
-                                    onChange={(e) => setEmailData({ ...emailData, productName: e.target.value })}
-                                    className="w-full border p-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                    placeholder="e.g. LoginHotspot v3"
-                                />
+                                    onChange={(e) => {
+                                        const selectedName = e.target.value;
+                                        const selectedFile = SAVED_LINKS.find(f => f.name === selectedName);
+                                        setEmailData({
+                                            ...emailData,
+                                            productName: selectedName,
+                                            fileLink: selectedFile ? selectedFile.url : emailData.fileLink
+                                        });
+                                    }}
+                                    className="w-full border p-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"
+                                >
+                                    <option value="">-- Select Product --</option>
+                                    {SAVED_LINKS.map(file => (
+                                        <option key={file.id} value={file.name}>{file.name}</option>
+                                    ))}
+                                </select>
                             </div>
 
                             <div>
@@ -635,6 +649,9 @@ export const Admin = () => {
 
                             <div>
                                 <label className="block text-sm font-medium mb-1">Download Link (ZIP)</label>
+
+                                {/* Quick Select Dropdown Removed - Moved to Product Name */}
+
                                 <input
                                     name="fileLink"
                                     value={emailData.fileLink}
