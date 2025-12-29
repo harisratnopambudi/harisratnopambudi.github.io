@@ -18,9 +18,19 @@ export const Contact = () => {
         e.preventDefault();
         const { name, email, subject, message } = formData;
 
-        const mailtoLink = `mailto:harisratnopambudi@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`)}`;
+        const subjectEncoded = encodeURIComponent(subject);
+        const bodyEncoded = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`);
 
-        window.location.href = mailtoLink;
+        const isAndroid = /Android/i.test(navigator.userAgent);
+
+        if (isAndroid) {
+            // Attempt to open specifically in Gmail app on Android
+            const gmailIntent = `intent://send?to=harisratnopambudi@gmail.com&subject=${subjectEncoded}&body=${bodyEncoded}#Intent;scheme=mailto;package=com.google.android.gm;end`;
+            window.location.href = gmailIntent;
+        } else {
+            const mailtoLink = `mailto:harisratnopambudi@gmail.com?subject=${subjectEncoded}&body=${bodyEncoded}`;
+            window.location.href = mailtoLink;
+        }
     };
 
     return (
@@ -46,7 +56,7 @@ export const Contact = () => {
                                 </div>
                                 <div>
                                     <h4 className="font-medium text-gray-900">Email</h4>
-                                    <p className="text-gray-500">harisratnopambudi@gmail.com</p>
+                                    <a href="mailto:harisratnopambudi@gmail.com" className="text-gray-500 hover:text-blue-600 transition-colors">harisratnopambudi@gmail.com</a>
                                 </div>
                             </div>
                             <div className="flex items-start">
