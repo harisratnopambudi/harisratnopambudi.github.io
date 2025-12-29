@@ -128,7 +128,7 @@ export const ProductDetail = () => {
                                     ))}
                                 </div>
                                 {/* Status Bar Overlay */}
-                                <div className="absolute top-0 left-0 w-full h-12 px-6 flex justify-between items-center z-20 pt-2">
+                                <div className="absolute top-0 left-0 w-full h-12 px-6 flex justify-between items-start z-20 pt-3">
                                     <span className="text-white font-semibold text-xs ml-2">9:41</span>
                                     <div className="flex items-center gap-1.5 mr-2">
                                         <Signal size={12} className="text-white fill-white" />
