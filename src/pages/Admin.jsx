@@ -219,7 +219,8 @@ export const Admin = () => {
                         height: 896,
                         useCORS: true,
                         allowTaint: true,
-                        foreignObjectRendering: true, // Attempt to use foreignObject for better CSS support
+                        foreignObjectRendering: false, // Disabled as it causes image missing issues
+                        imageTimeout: 0, // Wait for images
                         windowWidth: 414,
                         windowHeight: 896,
                         scale: 1,
