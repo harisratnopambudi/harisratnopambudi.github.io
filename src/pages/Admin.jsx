@@ -218,13 +218,14 @@ export const Admin = () => {
                         width: 414,
                         height: 896,
                         useCORS: true,
-                        allowTaint: true,
-                        foreignObjectRendering: false, // Disabled as it causes image missing issues
+                        allowTaint: false, // MUST be false to export image
+                        foreignObjectRendering: true, // REQUIRED for complex CSS (Glassmorphism etc)
                         imageTimeout: 0, // Wait for images
                         windowWidth: 414,
                         windowHeight: 896,
                         scale: 1,
-                        logging: false
+                        logging: false,
+                        backgroundColor: null // Preserve transparency if any
                     });
 
                     const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
