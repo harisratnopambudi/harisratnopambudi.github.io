@@ -195,8 +195,8 @@ export const Admin = () => {
                 setCaptureStatus(`Loading ${page} (${i + 1}/${pages.length})...`);
                 setIframeUrl(url);
 
-                // Wait for load + render (increased to 3.5s)
-                await new Promise(resolve => setTimeout(resolve, 3500));
+                // Wait for load + render (increased to 5s for CSS)
+                await new Promise(resolve => setTimeout(resolve, 5000));
 
                 setCaptureStatus(`Capturing ${page}...`);
 
@@ -205,14 +205,16 @@ export const Admin = () => {
                     const doc = iframeRef.current.contentDocument;
                     if (!doc) throw new Error("Acccess Denied (CORS)");
 
-                    const canvas = await html2canvas(doc.body, {
+                    const canvas = await html2canvas(doc.documentElement, {
                         width: 414,
                         height: 896,
                         useCORS: true,
                         allowTaint: true,
+                        foreignObjectRendering: true, // Attempt to use foreignObject for better CSS support
                         windowWidth: 414,
                         windowHeight: 896,
-                        scale: 1
+                        scale: 1,
+                        logging: false
                     });
 
                     const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
