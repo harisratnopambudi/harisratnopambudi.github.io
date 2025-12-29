@@ -154,9 +154,30 @@ export const Admin = () => {
     const handleBatchCapture = async () => {
         if (!iframeRef.current) return;
 
+        // CORS / Domain Check
+        const currentDomain = window.location.hostname;
+        let targetDomain = '';
+        try {
+            targetDomain = new URL(screenshotUrl).hostname;
+        } catch (e) {
+            alert("Invalid URL format");
+            return;
+        }
+
+        if (currentDomain !== targetDomain) {
+            const proceed = window.confirm(
+                `WARNING: You are on "${currentDomain}" but trying to capture "${targetDomain}".\n\n` +
+                `Browsers BLOCK automated screenshots across different domains for security.\n` +
+                `Required: Admin and Target must be on the SAME DOMAIN.\n\n` +
+                `The ZIP will likely be empty. Continue anyway?`
+            );
+            if (!proceed) return;
+        }
+
         setIsCapturing(true);
         const pages = ['login.html', 'status.html', 'logout.html', 'alogin.html', 'error.html', 'menu.html', 'info.html', 'contact.html'];
         const zip = new JSZip();
+        let capturedCount = 0;
 
         // Extract base path from current input
         let basePath = screenshotUrl;
@@ -174,27 +195,42 @@ export const Admin = () => {
                 setCaptureStatus(`Loading ${page} (${i + 1}/${pages.length})...`);
                 setIframeUrl(url);
 
-                // Wait for load + render
-                await new Promise(resolve => setTimeout(resolve, 3000));
+                // Wait for load + render (increased to 3.5s)
+                await new Promise(resolve => setTimeout(resolve, 3500));
 
                 setCaptureStatus(`Capturing ${page}...`);
 
-                // Capture
+                // Check access
                 try {
-                    const canvas = await html2canvas(iframeRef.current.contentDocument.body, {
+                    const doc = iframeRef.current.contentDocument;
+                    if (!doc) throw new Error("Acccess Denied (CORS)");
+
+                    const canvas = await html2canvas(doc.body, {
                         width: 414,
                         height: 896,
                         useCORS: true,
+                        allowTaint: true,
                         windowWidth: 414,
-                        windowHeight: 896
+                        windowHeight: 896,
+                        scale: 1
                     });
 
                     const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-                    zip.file(`${page.replace('.html', '')}-mobile.png`, blob);
+                    if (blob) {
+                        zip.file(`${page.replace('.html', '')}-mobile.png`, blob);
+                        capturedCount++;
+                    } else {
+                        console.error("Null blob for " + page);
+                    }
                 } catch (err) {
                     console.error(`Failed to capture ${page}:`, err);
-                    // Continue to next page even if one fails
+                    // Add a text file explaining the error for this page
+                    zip.file(`${page}-ERROR.txt`, `Failed to capture: ${err.message}\nMost likely Cross-Origin blocking.\nTry running Admin on same domain as target.`);
                 }
+            }
+
+            if (capturedCount === 0) {
+                alert("All screenshots failed! Check the generated ZIP for ERROR.txt files to see why (likely CORS/Domain issues).");
             }
 
             setCaptureStatus('Generating ZIP...');
@@ -204,7 +240,7 @@ export const Admin = () => {
 
         } catch (error) {
             console.error("Batch capture failed:", error);
-            alert("Error: " + error.message + "\nMake sure the target site is on the SAME DOMAIN.");
+            alert("Error: " + error.message);
         } finally {
             setIsCapturing(false);
             setCaptureStatus('');
