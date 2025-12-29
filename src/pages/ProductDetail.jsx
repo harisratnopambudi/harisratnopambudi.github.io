@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { PRODUCTS } from '../data/products';
 import { Button } from '../components/ui/Button';
-import { ArrowLeft, Check, ShoppingCart, Share2, Wifi, Battery, Signal } from 'lucide-react';
+import { ArrowLeft, Check, ShoppingCart, Share2, Wifi, Battery, Signal, MessageCircle } from 'lucide-react';
 
 export const ProductDetail = () => {
     const { id } = useParams();
@@ -199,13 +199,40 @@ export const ProductDetail = () => {
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-4">
-                        <Button
-                            onClick={handleOrder}
-                            className="flex-1 py-4 text-base shadow-xl shadow-blue-600/20 hover:shadow-blue-600/30 transform hover:-translate-y-1"
-                        >
-                            <ShoppingCart size={20} className="mr-2" />
-                            Order Now
-                        </Button>
+                        {product.shopeeUrl ? (
+                            <>
+                                <a
+                                    href={product.shopeeUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex-1"
+                                >
+                                    <Button
+                                        className="w-full py-4 text-base shadow-xl shadow-orange-600/20 hover:shadow-orange-600/30 transform hover:-translate-y-1 !bg-orange-500 !hover:bg-orange-600 !border-orange-500 text-white"
+                                    >
+                                        <ShoppingCart size={20} className="mr-2" />
+                                        Order Now
+                                    </Button>
+                                </a>
+                                <Button
+                                    onClick={handleOrder}
+                                    variant="outline"
+                                    className="flex-1 py-4 text-base"
+                                >
+                                    <MessageCircle size={20} className="mr-2" />
+                                    WhatsApp
+                                </Button>
+                            </>
+                        ) : (
+                            <Button
+                                onClick={handleOrder}
+                                className="flex-1 py-4 text-base shadow-xl shadow-blue-600/20 hover:shadow-blue-600/30 transform hover:-translate-y-1"
+                            >
+                                <ShoppingCart size={20} className="mr-2" />
+                                Order Now
+                            </Button>
+                        )}
+
                         {product.demoUrl && (
                             <a href={product.demoUrl} target="_blank" rel="noopener noreferrer" className="flex-none">
                                 <Button variant="outline" className="h-full px-6 py-4">

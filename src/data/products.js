@@ -3,10 +3,11 @@ import loginHotspot1Img2 from '../assets/products/loginhotspot1/status-mobile.pn
 import loginHotspot1Img3 from '../assets/products/loginhotspot1/logout-mobile.png';
 import loginHotspot1Img4 from '../assets/products/loginhotspot1/error-mobile.png';
 
-import loginHotspot2Main from '../assets/products/loginhotspot2/login-mobile.png';
-import loginHotspot2Img2 from '../assets/products/loginhotspot2/status-mobile.png';
-import loginHotspot2Img3 from '../assets/products/loginhotspot2/menu-mobile.png';
-import loginHotspot2Img4 from '../assets/products/loginhotspot2/info-mobile.png';
+import loginHotspot2Img1 from '../assets/products/loginhotspot2/img1.png';
+import loginHotspot2Img2 from '../assets/products/loginhotspot2/img2.png';
+import loginHotspot2Img3 from '../assets/products/loginhotspot2/img3.png';
+import loginHotspot2Img4 from '../assets/products/loginhotspot2/img4.png';
+import loginHotspot2Img5 from '../assets/products/loginhotspot2/img5.png';
 
 import loginHotspot3Main from '../assets/products/loginhotspot3/login-mobile.png';
 import loginHotspot3Img2 from '../assets/products/loginhotspot3/status-mobile.png';
@@ -33,7 +34,8 @@ export const PRODUCTS = [
         ],
         githubRepo: "harisratnopambudi/loginhotspot3",
         size: "48 KB",
-        features: ["Banner Smart Time Greeting", "Dynamic Package Display", "Integrated Prayer Widget", "Modern Split-Sheet UI", "Banner Holiday & Event Aware", "100% Offline Capability"]
+        features: ["Banner Smart Time Greeting", "Dynamic Package Display", "Integrated Prayer Widget", "Modern Split-Sheet UI", "Banner Holiday & Event Aware", "100% Offline Capability"],
+        shopeeUrl: "https://shopee.co.id/Template-Login-Page-Hotspot-Mikrotik-Premium-Fitur-Jadwal-Sholat-Smart-Banner-(Auto-Ganti)-i.1712851808.56503884142?extraParams=%7B%22display_model_id%22%3A310370771291%7D"
     },
     {
         id: 1766733197898,
@@ -45,16 +47,18 @@ export const PRODUCTS = [
         shortDesc: "Template Hotspot Login MikroTik Premium - Desain Modern, Proteksi Lisensi, Kustomisasi Mudah",
         desc: "Halaman login hotspot ini dibuat sebagai portal WiFi yang modern, profesional, dan ringan, menghadirkan sistem login berbasis license key dengan halaman status real-time (durasi sesi, sisa waktu/kuota, serta tombol logout), ditambah menu informatif seperti info layanan, kontak WhatsApp dukungan, dan panduan singkat penggunaan—semuanya dikemas dengan tata letak responsif, animasi mikro yang halus, serta waktu muat cepat, sehingga cocok untuk RT/RW Net, kafe, kos, hotel, dan berbagai usaha WiFi yang ingin memberi kesan premium tanpa membebani koneksi.",
         demoUrl: "https://harisratnopambudi.github.io/loginhotspot2/login.html",
-        img: loginHotspot2Main,
+        img: loginHotspot2Img1,
         images: [
-            loginHotspot2Main,
+            loginHotspot2Img1,
             loginHotspot2Img2,
             loginHotspot2Img3,
-            loginHotspot2Img4
+            loginHotspot2Img4,
+            loginHotspot2Img5
         ],
         githubRepo: "harisratnopambudi/loginhotspot2",
         size: "907 KB",
-        features: ["Desain Premium Modern", "Sistem Proteksi Lisensi", "Kustomisasi Mudah", "5 Halaman Lengkap", "100% Kompatibel MikroTik", "Fitur Keamanan Ekstra"]
+        features: ["Desain Premium Modern", "Sistem Proteksi Lisensi", "Kustomisasi Mudah", "5 Halaman Lengkap", "100% Kompatibel MikroTik", "Fitur Keamanan Ekstra"],
+        shopeeUrl: "https://shopee.co.id/Template-Login-Page-Hotspot-MikroTik-Premium-Responsive-Desain-Modern-Ringan-i.1712851808.54053900258?extraParams=%7B%22display_model_id%22%3A395370512208%7D"
     },
     {
         id: 1766714059553,
@@ -75,6 +79,7 @@ export const PRODUCTS = [
         ],
         githubRepo: "harisratnopambudi/loginhotspot1",
         size: "40 KB",
-        features: ["Desain Premium Glassmorphism", "Mode Login Fleksibel (Configurable)", "Sistem Proteksi & Lisensi Terintegrasi", "Interaksi Pengguna yang Responsif (UX)", "Integrasi WhatsApp Support", "Konfigurasi Terpusat"]
+        features: ["Desain Premium Glassmorphism", "Mode Login Fleksibel (Configurable)", "Sistem Proteksi & Lisensi Terintegrasi", "Interaksi Pengguna yang Responsif (UX)", "Integrasi WhatsApp Support", "Konfigurasi Terpusat"],
+        shopeeUrl: "https://shopee.co.id/Template-Login-Hotspot-MikroTik-Premium-Desain-Glassmorphism-Modern-Ringan-Responsive-i.1712851808.40377634145?extraParams=%7B%22display_model_id%22%3A216351954851%7D"
     }
 ];
