@@ -1,10 +1,79 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ProductCard } from '../components/ProductCard';
 import { Button } from '../components/ui/Button';
-import { Plus, Trash2, Copy, Check, Download, Loader2 } from 'lucide-react';
+import { Plus, Trash2, Copy, Check, Download, Loader2, Mail } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+
+// CONFIGURATION & SECRETS
+const _0x4f2a = ['M', 'i', 'k', 'r', 'o', 't', 'i', 'k', 'A', 'd', 'm', 'i', 'n', 'S', 'e', 'c', 'r', 'e', 't', 'K', 'e', 'y', '2', '0', '2', '5', '!', '@', '#'];
+const SECRET_ADMIN = _0x4f2a.join('');
+const CHARS_UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const CHARS_DIGITS = '0123456789';
+const CHARS_SYMBOLS = '@#$%&*-_+=!?';
+
+// CRYPTO UTILITIES
+async function hmacSHA256(message, key) {
+    const encoder = new TextEncoder();
+    const keyData = encoder.encode(key);
+    const msgData = encoder.encode(message);
+
+    const cryptoKey = await crypto.subtle.importKey(
+        'raw',
+        keyData,
+        { name: 'HMAC', hash: 'SHA-256' },
+        false,
+        ['sign']
+    );
+
+    const signature = await crypto.subtle.sign('HMAC', cryptoKey, msgData);
+    const hashArray = Array.from(new Uint8Array(signature));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function shuffleString(str) {
+    const arr = str.split('');
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr.join('');
+}
+
+function injectSymbols(hashStr) {
+    let result = '';
+    for (let i = 0; i < hashStr.length; i++) {
+        const char = hashStr[i].toUpperCase();
+        if (CHARS_UPPER.includes(char) || CHARS_DIGITS.includes(char)) {
+            result += char;
+        } else {
+            const hexVal = parseInt(char, 16);
+            result += CHARS_UPPER[hexVal % CHARS_UPPER.length];
+        }
+    }
+
+    const symbolCount = 4;
+    let finalArr = result.split('');
+    for (let i = 0; i < symbolCount; i++) {
+        const pos = Math.floor(Math.random() * finalArr.length);
+        const sym = CHARS_SYMBOLS[Math.floor(Math.random() * CHARS_SYMBOLS.length)];
+        finalArr.splice(pos, 0, sym);
+    }
+
+    return shuffleString(finalArr.join(''));
+}
+
+async function generateLicenseKey(username, appName) {
+    const timestamp = Date.now().toString();
+    const randomSalt = crypto.getRandomValues(new Uint8Array(8))
+        .reduce((s, b) => s + b.toString(16).padStart(2, '0'), '');
+
+    const input = username + appName + timestamp + randomSalt;
+    const hashBase = await hmacSHA256(input, SECRET_ADMIN);
+    // Slice to 28 chars to match example format roughly
+    return injectSymbols(hashBase).slice(0, 28).toUpperCase();
+}
 
 export const Admin = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -26,6 +95,13 @@ export const Admin = () => {
         features: ['']
     });
 
+    const [emailData, setEmailData] = useState({
+        buyerEmail: '',
+        productName: '',
+        licenseKey: '',
+        fileLink: ''
+    });
+
     const [copied, setCopied] = useState(false);
 
     // Screenshot Tool State
@@ -33,6 +109,7 @@ export const Admin = () => {
     const [screenshotUrl, setScreenshotUrl] = useState('https://harisdevlab.online/loginhotspot3/login.html');
     const [iframeUrl, setIframeUrl] = useState('');
     const [isCapturing, setIsCapturing] = useState(false);
+    const [isGenerating, setIsGenerating] = useState(false); // New state for key generation
     const [captureStatus, setCaptureStatus] = useState('');
     const iframeRef = useRef(null);
 
@@ -149,6 +226,24 @@ export const Admin = () => {
         const newUrl = `${basePath}${filename}`;
         setScreenshotUrl(newUrl);
         setIframeUrl(newUrl);
+    };
+
+    const handleGenerateKey = async () => {
+        if (!emailData.buyerEmail) {
+            alert('Please enter Buyer Email first!');
+            return;
+        }
+
+        setIsGenerating(true);
+        try {
+            const key = await generateLicenseKey(emailData.buyerEmail, emailData.productName || 'LoginHotspot3');
+            setEmailData(prev => ({ ...prev, licenseKey: key }));
+        } catch (error) {
+            console.error("Key gen failed:", error);
+            alert("Failed to generate key");
+        } finally {
+            setIsGenerating(false);
+        }
     };
 
     const handleBatchCapture = async () => {
@@ -278,6 +373,12 @@ export const Admin = () => {
                 >
                     Screenshot Tool
                 </button>
+                <button
+                    className={`pb-4 px-4 font-medium transition-colors ${activeTab === 'email' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                    onClick={() => setActiveTab('email')}
+                >
+                    Email Sender
+                </button>
             </div>
 
             {activeTab === 'generator' ? (
@@ -393,7 +494,7 @@ export const Admin = () => {
                         </div>
                     </div>
                 </div>
-            ) : (
+            ) : activeTab === 'screenshot' ? (
                 <div className="flex flex-col lg:flex-row gap-8 items-start">
                     <div className="w-full lg:w-1/3 space-y-6">
                         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
@@ -479,7 +580,118 @@ export const Admin = () => {
                         </div>
                     </div>
                 </div>
-            )}
-        </div>
+            ) : (
+                <div className="max-w-2xl mx-auto">
+                    <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-lg">
+                        <h2 className="text-2xl font-bold mb-6 flex items-center">
+                            <Mail className="mr-3 text-blue-600" />
+                            Send Product License
+                        </h2>
+
+                        <div className="space-y-6">
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Buyer Email</label>
+                                <input
+                                    type="email"
+                                    name="buyerEmail"
+                                    value={emailData.buyerEmail}
+                                    onChange={(e) => setEmailData({ ...emailData, buyerEmail: e.target.value })}
+                                    className="w-full border p-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                    placeholder="buyer@example.com"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Product Name</label>
+                                <input
+                                    name="productName"
+                                    value={emailData.productName}
+                                    onChange={(e) => setEmailData({ ...emailData, productName: e.target.value })}
+                                    className="w-full border p-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                    placeholder="e.g. LoginHotspot v3"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium mb-1">License Key</label>
+                                <div className="flex gap-2 relative">
+                                    <input
+                                        name="licenseKey"
+                                        value={emailData.licenseKey}
+                                        onChange={(e) => setEmailData({ ...emailData, licenseKey: e.target.value })}
+                                        className="w-full border p-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono text-blue-600 flex-1"
+                                        placeholder="XXXX-XXXX-XXXX-XXXX"
+                                    />
+                                    <Button
+                                        onClick={handleGenerateKey}
+                                        disabled={isGenerating || !emailData.buyerEmail}
+                                        className="bg-indigo-600 hover:bg-indigo-700 whitespace-nowrap"
+                                        title="Auto-generate based on Email"
+                                    >
+                                        {isGenerating ? <Loader2 className="animate-spin" size={18} /> : '⚡ Generate'}
+                                    </Button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Download Link (ZIP)</label>
+                                <input
+                                    name="fileLink"
+                                    value={emailData.fileLink}
+                                    onChange={(e) => setEmailData({ ...emailData, fileLink: e.target.value })}
+                                    className="w-full border p-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
+                                    placeholder="https://drive.google.com/..."
+                                />
+                            </div>
+
+                            <div className="pt-4">
+                                <Button
+                                    onClick={() => {
+                                        const subject = encodeURIComponent(`License Key Activation - ${emailData.productName}`);
+                                        const body = encodeURIComponent(`Halo,
+
+Terima kasih telah membeli produk ${emailData.productName}!
+
+Berikut adalah detail lisensi Anda:
+
+Product: ${emailData.productName}
+License Key: ${emailData.licenseKey}
+Download Link: ${emailData.fileLink}
+
+Panduan Instalasi:
+1. Download file dari link di atas.
+2. Ekstrak file ZIP.
+3. Masukkan License Key pada file config.js atau saat diminta sistem.
+
+Jika ada pertanyaan, silakan balas email ini.
+
+Salam,
+Haris DevLab
+
+---
+Lihat produk kami lainnya:
+Website: https://harisdevlab.online/
+Shopee: https://shopee.co.id/harisdevlab`);
+
+                                        // Open Gmail Compose Window
+                                        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${emailData.buyerEmail}&su=${subject}&body=${body}`;
+                                        window.open(gmailUrl, '_blank');
+                                    }}
+                                    className="w-full py-4 text-lg justify-center bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 shadow-lg shadow-red-500/30"
+                                    disabled={!emailData.buyerEmail || !emailData.productName}
+                                >
+                                    <Mail className="mr-2" />
+                                    Open in Gmail
+                                </Button>
+                                <p className="text-center text-xs text-gray-400 mt-2">
+                                    This will open a new tab with your Gmail composed and ready to send.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
+            }
+        </div >
     );
 };
