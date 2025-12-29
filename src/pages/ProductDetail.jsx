@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { PRODUCTS } from '../data/products';
 import { Button } from '../components/ui/Button';
-import { ArrowLeft, Check, ShoppingCart, Share2 } from 'lucide-react';
+import { ArrowLeft, Check, ShoppingCart, Share2, Wifi, Battery, Signal } from 'lucide-react';
 
 export const ProductDetail = () => {
     const { id } = useParams();
@@ -118,6 +118,15 @@ export const ProductDetail = () => {
                                     alt={product.title}
                                     className="w-full h-full object-cover"
                                 />
+                                {/* Status Bar Overlay */}
+                                <div className="absolute top-0 left-0 w-full h-12 px-6 flex justify-between items-center z-20 pt-2">
+                                    <span className="text-white font-semibold text-xs ml-2">9:41</span>
+                                    <div className="flex items-center gap-1.5 mr-2">
+                                        <Signal size={12} className="text-white fill-white" />
+                                        <Wifi size={12} className="text-white" />
+                                        <Battery size={12} className="text-white fill-white" />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
