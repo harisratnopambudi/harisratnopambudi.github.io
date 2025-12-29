@@ -99,7 +99,7 @@ export const ProductDetail = () => {
                 <ArrowLeft size={18} className="mr-2" /> Back to Catalog
             </Link>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
+            <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-8 lg:gap-12 items-start">
                 {/* Product Image Section */}
                 <div className="w-full">
                     {/* Main Image */}
