@@ -175,7 +175,8 @@ export const Admin = () => {
         }
 
         setIsCapturing(true);
-        const pages = ['login.html', 'status.html', 'logout.html', 'alogin.html', 'error.html', 'menu.html', 'info.html', 'contact.html'];
+        // Removed alogin.html as requested
+        const pages = ['login.html', 'status.html', 'logout.html', 'error.html', 'menu.html', 'info.html', 'contact.html'];
         const zip = new JSZip();
         let capturedCount = 0;
 
@@ -204,6 +205,14 @@ export const Admin = () => {
                 try {
                     const doc = iframeRef.current.contentDocument;
                     if (!doc) throw new Error("Acccess Denied (CORS)");
+
+                    // Inject CSS to hide scrollbars to prevent black bars/scroll artifacts
+                    const style = doc.createElement('style');
+                    style.innerHTML = `
+                        ::-webkit-scrollbar { display: none !important; }
+                        body, html { -ms-overflow-style: none !important; scrollbar-width: none !important; overflow: hidden !important; }
+                    `;
+                    doc.head.appendChild(style);
 
                     const canvas = await html2canvas(doc.documentElement, {
                         width: 414,
@@ -424,7 +433,6 @@ export const Admin = () => {
                                 <Button variant="outline" size="sm" onClick={() => handleQuickLink('login.html')} disabled={isCapturing}>Login</Button>
                                 <Button variant="outline" size="sm" onClick={() => handleQuickLink('status.html')} disabled={isCapturing}>Status</Button>
                                 <Button variant="outline" size="sm" onClick={() => handleQuickLink('logout.html')} disabled={isCapturing}>Logout</Button>
-                                <Button variant="outline" size="sm" onClick={() => handleQuickLink('alogin.html')} disabled={isCapturing}>ALogin</Button>
                                 <Button variant="outline" size="sm" onClick={() => handleQuickLink('error.html')} disabled={isCapturing}>Error</Button>
                                 <Button variant="outline" size="sm" onClick={() => handleQuickLink('menu.html')} disabled={isCapturing}>Menu</Button>
                                 <Button variant="outline" size="sm" onClick={() => handleQuickLink('info.html')} disabled={isCapturing}>Info</Button>
