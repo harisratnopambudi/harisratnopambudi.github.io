@@ -9,8 +9,8 @@ export const Navbar = () => {
 
     const navLinks = [
         { name: 'Home', path: '/' },
-        { name: 'Catalog', path: '/' }, // Assuming Catalog is Home for now
         { name: 'Contact', path: '/contact' },
+        { name: 'Admin', path: '/admin' },
     ];
 
     const isActive = (path) => location.pathname === path;
