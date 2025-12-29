@@ -29,6 +29,9 @@ export const Admin = () => {
     const [activeTab, setActiveTab] = useState('generator');
     const [screenshotUrl, setScreenshotUrl] = useState('https://harisdevlab.online/loginhotspot3/login.html');
     const [iframeUrl, setIframeUrl] = useState('');
+    const [isCapturing, setIsCapturing] = useState(false);
+    const [captureStatus, setCaptureStatus] = useState('');
+    const iframeRef = useRef(null);
 
     // Simple protection
     const handleLogin = (e) => {
@@ -143,6 +146,66 @@ export const Admin = () => {
         const newUrl = `${basePath}${filename}`;
         setScreenshotUrl(newUrl);
         setIframeUrl(newUrl);
+    };
+
+    const handleBatchCapture = async () => {
+        if (!iframeRef.current) return;
+
+        setIsCapturing(true);
+        const pages = ['login.html', 'status.html', 'logout.html', 'alogin.html', 'error.html', 'menu.html', 'info.html', 'contact.html'];
+        const zip = new JSZip();
+
+        // Extract base path from current input
+        let basePath = screenshotUrl;
+        if (basePath.includes('.html')) {
+            basePath = basePath.substring(0, basePath.lastIndexOf('/') + 1);
+        } else if (!basePath.endsWith('/')) {
+            basePath = basePath + '/';
+        }
+
+        try {
+            for (let i = 0; i < pages.length; i++) {
+                const page = pages[i];
+                const url = `${basePath}${page}`;
+
+                setCaptureStatus(`Loading ${page} (${i + 1}/${pages.length})...`);
+                setIframeUrl(url);
+
+                // Wait for load + render
+                await new Promise(resolve => setTimeout(resolve, 3000));
+
+                setCaptureStatus(`Capturing ${page}...`);
+
+                // Capture
+                try {
+                    const canvas = await html2canvas(iframeRef.current.contentDocument.body, {
+                        width: 414,
+                        height: 896,
+                        useCORS: true,
+                        windowWidth: 414,
+                        windowHeight: 896
+                    });
+
+                    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                    zip.file(`${page.replace('.html', '')}-mobile.png`, blob);
+                } catch (err) {
+                    console.error(`Failed to capture ${page}:`, err);
+                    // Continue to next page even if one fails
+                }
+            }
+
+            setCaptureStatus('Generating ZIP...');
+            const zipContent = await zip.generateAsync({ type: 'blob' });
+            saveAs(zipContent, 'hotspot-screenshots.zip');
+            setCaptureStatus('Done!');
+
+        } catch (error) {
+            console.error("Batch capture failed:", error);
+            alert("Error: " + error.message + "\nMake sure the target site is on the SAME DOMAIN.");
+        } finally {
+            setIsCapturing(false);
+            setCaptureStatus('');
+        }
     };
 
     return (
@@ -291,62 +354,70 @@ export const Admin = () => {
                                         onChange={(e) => setScreenshotUrl(e.target.value)}
                                         className="w-full border p-2 rounded-lg"
                                         placeholder="https://..."
+                                        disabled={isCapturing}
                                     />
                                 </div>
-                                <Button className="w-full justify-center">Load Website</Button>
+                                <Button className="w-full justify-center" disabled={isCapturing}>Load Website</Button>
                             </form>
                         </div>
 
                         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                            <h2 className="text-xl font-bold mb-4">Quick Links (MikroTik)</h2>
+                            <h2 className="text-xl font-bold mb-4">Quick Actions</h2>
+
+                            <Button
+                                onClick={handleBatchCapture}
+                                className="w-full justify-center mb-4 bg-green-600 hover:bg-green-700"
+                                disabled={isCapturing || !iframeUrl}
+                            >
+                                {isCapturing ? <Loader2 className="animate-spin mr-2" /> : <Download className="mr-2" />}
+                                {isCapturing ? 'Processing...' : 'Auto Capture All & Zip'}
+                            </Button>
+
+                            {captureStatus && (
+                                <div className="mb-4 text-sm text-center font-medium text-blue-600 bg-blue-50 p-2 rounded-lg">
+                                    {captureStatus}
+                                </div>
+                            )}
+
                             <div className="grid grid-cols-2 gap-2">
-                                <Button variant="outline" size="sm" onClick={() => handleQuickLink('login.html')}>Login</Button>
-                                <Button variant="outline" size="sm" onClick={() => handleQuickLink('status.html')}>Status</Button>
-                                <Button variant="outline" size="sm" onClick={() => handleQuickLink('logout.html')}>Logout</Button>
-                                <Button variant="outline" size="sm" onClick={() => handleQuickLink('alogin.html')}>ALogin (Redirect)</Button>
-                                <Button variant="outline" size="sm" onClick={() => handleQuickLink('error.html')}>Error</Button>
-                                <Button variant="outline" size="sm" onClick={() => handleQuickLink('menu.html')}>Menu</Button>
-                                <Button variant="outline" size="sm" onClick={() => handleQuickLink('info.html')}>Info</Button>
-                                <Button variant="outline" size="sm" onClick={() => handleQuickLink('contact.html')}>Contact</Button>
+                                <Button variant="outline" size="sm" onClick={() => handleQuickLink('login.html')} disabled={isCapturing}>Login</Button>
+                                <Button variant="outline" size="sm" onClick={() => handleQuickLink('status.html')} disabled={isCapturing}>Status</Button>
+                                <Button variant="outline" size="sm" onClick={() => handleQuickLink('logout.html')} disabled={isCapturing}>Logout</Button>
+                                <Button variant="outline" size="sm" onClick={() => handleQuickLink('alogin.html')} disabled={isCapturing}>ALogin</Button>
+                                <Button variant="outline" size="sm" onClick={() => handleQuickLink('error.html')} disabled={isCapturing}>Error</Button>
+                                <Button variant="outline" size="sm" onClick={() => handleQuickLink('menu.html')} disabled={isCapturing}>Menu</Button>
+                                <Button variant="outline" size="sm" onClick={() => handleQuickLink('info.html')} disabled={isCapturing}>Info</Button>
+                                <Button variant="outline" size="sm" onClick={() => handleQuickLink('contact.html')} disabled={isCapturing}>Contact</Button>
                             </div>
-                            <p className="text-xs text-gray-500 mt-4">
-                                *Buttons automatically replace the filename in the URL above.
-                            </p>
                         </div>
 
                         <div className="bg-blue-50 p-6 rounded-2xl border border-blue-100">
                             <h3 className="font-bold text-blue-800 mb-2">Instructions</h3>
                             <p className="text-sm text-blue-700 mb-2">
-                                1. Enter the full URL of your login page (e.g., .../login.html).
+                                1. Enter the full URL of your login page.
                             </p>
                             <p className="text-sm text-blue-700 mb-2">
                                 2. Click "Load Website".
                             </p>
-                            <p className="text-sm text-blue-700 mb-2">
-                                3. Use Quick Links to switch pages without retyping.
-                            </p>
                             <p className="text-sm text-blue-700">
-                                4. Use your computer's <b>Snipping Tool</b> to capture the phone screen area on the right.
+                                3. Click <b>Auto Capture All & Zip</b> to automatically visit all standard pages, screenshot them, and download a ZIP file.
                             </p>
                         </div>
                     </div>
 
                     <div className="w-full lg:w-2/3 flex justify-center bg-gray-100 p-8 rounded-3xl min-h-[950px]">
-                        {/* Phone Mockup Frame */}
-                        <div className="relative border-gray-900 bg-gray-900 border-[14px] rounded-[2.5rem] h-[896px] w-[414px] shadow-2xl">
-                            <div className="w-[148px] h-[18px] bg-gray-900 top-0 rounded-b-[1rem] left-1/2 -translate-x-1/2 absolute z-10"></div>
-                            <div className="h-[32px] w-[3px] bg-gray-900 absolute -left-[17px] top-[72px] rounded-l-lg"></div>
-                            <div className="h-[46px] w-[3px] bg-gray-900 absolute -left-[17px] top-[124px] rounded-l-lg"></div>
-                            <div className="h-[46px] w-[3px] bg-gray-900 absolute -left-[17px] top-[178px] rounded-l-lg"></div>
-                            <div className="h-[64px] w-[3px] bg-gray-900 absolute -right-[17px] top-[142px] rounded-r-lg"></div>
-
-                            <div className="rounded-[2rem] overflow-hidden w-full h-full bg-white relative">
+                        {/* Plain Viewport Container */}
+                        <div className="bg-white shadow-2xl relative">
+                            {/* 414x896 Viewport */}
+                            <div style={{ width: '414px', height: '896px' }} className="overflow-hidden bg-white">
                                 {iframeUrl ? (
                                     <iframe
+                                        ref={iframeRef}
                                         src={iframeUrl}
                                         className="w-full h-full border-0"
                                         title="Preview"
-                                        sandbox="allow-same-origin allow-scripts allow-forms" // Relaxed sandbox for login forms
+                                    // No sandbox allows scripts, but keeping it flexible. 
+                                    // IMPORTANT: html2canvas needs access to contentDocument, so SAME ORIGIN is mandatory.
                                     />
                                 ) : (
                                     <div className="flex items-center justify-center h-full text-gray-400">
