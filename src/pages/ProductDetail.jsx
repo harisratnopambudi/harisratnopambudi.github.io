@@ -10,11 +10,19 @@ export const ProductDetail = () => {
     const [selectedImage, setSelectedImage] = useState(0);
     const [repoSize, setRepoSize] = useState(null);
 
-    // Scroll to top on mount
+    // Scroll to top on mount and set up slideshow
     useEffect(() => {
         window.scrollTo(0, 0);
         setSelectedImage(0); // Reset image on product change
         setRepoSize(null);
+
+        // Slideshow interval
+        let interval;
+        if (product && product.images && product.images.length > 1) {
+            interval = setInterval(() => {
+                setSelectedImage((prev) => (prev + 1) % product.images.length);
+            }, 3000); // Change every 3 seconds
+        }
 
         // Fetch Repo Size if githubRepo is defined
         if (product && product.size) {
@@ -37,6 +45,10 @@ export const ProductDetail = () => {
                 })
                 .catch(err => console.error("Failed to fetch repo size:", err));
         }
+
+        return () => {
+            if (interval) clearInterval(interval);
+        };
     }, [id, product]);
 
     if (!product) {
@@ -110,29 +122,7 @@ export const ProductDetail = () => {
                         </div>
                     </div>
 
-                    {/* Thumbnails */}
-                    {images.length > 1 && (
-                        <div className="grid grid-cols-1 gap-4">
-                            {images.map((img, idx) => (
-                                <button
-                                    key={idx}
-                                    onClick={() => setSelectedImage(idx)}
-                                    className={`aspect-square rounded-2xl overflow-hidden border-2 transition-all p-1 ${selectedImage === idx
-                                        ? 'border-blue-600 shadow-md ring-2 ring-blue-100'
-                                        : 'border-transparent hover:border-gray-300'
-                                        }`}
-                                >
-                                    <div className="w-full h-full rounded-xl overflow-hidden">
-                                        <img
-                                            src={img}
-                                            alt={`${product.title} ${idx + 1}`}
-                                            className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
-                                        />
-                                    </div>
-                                </button>
-                            ))}
-                        </div>
-                    )}
+
                 </div>
 
                 {/* Product Info */}
