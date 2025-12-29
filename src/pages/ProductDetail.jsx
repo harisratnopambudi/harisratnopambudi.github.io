@@ -91,14 +91,22 @@ export const ProductDetail = () => {
                 {/* Product Image Section */}
                 <div className="w-full grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-4">
                     {/* Main Image */}
-                    <div className="h-full bg-white rounded-3xl overflow-hidden shadow-2xl shadow-gray-200 border border-gray-100 p-2">
-                        <div className="bg-gray-50 w-full h-full rounded-2xl overflow-hidden relative group">
-                            <img
-                                key={selectedImage} // Force re-render for animation if needed, or remove for smooth transition
-                                src={images[selectedImage]}
-                                alt={product.title}
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                            />
+                    {/* Main Image with iPhone XR Mockup */}
+                    <div className="flex justify-center">
+                        <div className="relative mx-auto border-gray-800 bg-gray-800 border-[14px] rounded-[2.5rem] h-[672px] w-[310px] shadow-xl">
+                            <div className="w-[148px] h-[18px] bg-gray-800 top-0 rounded-b-[1rem] left-1/2 -translate-x-1/2 absolute z-10"></div>
+                            <div className="h-[32px] w-[3px] bg-gray-800 absolute -left-[17px] top-[72px] rounded-l-lg"></div>
+                            <div className="h-[46px] w-[3px] bg-gray-800 absolute -left-[17px] top-[124px] rounded-l-lg"></div>
+                            <div className="h-[46px] w-[3px] bg-gray-800 absolute -left-[17px] top-[178px] rounded-l-lg"></div>
+                            <div className="h-[64px] w-[3px] bg-gray-800 absolute -right-[17px] top-[142px] rounded-r-lg"></div>
+                            <div className="rounded-[2rem] overflow-hidden w-full h-full bg-white relative">
+                                <img
+                                    key={selectedImage}
+                                    src={images[selectedImage]}
+                                    alt={product.title}
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
                         </div>
                     </div>
 
