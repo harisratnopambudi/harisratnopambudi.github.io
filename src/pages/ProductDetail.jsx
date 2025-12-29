@@ -112,12 +112,21 @@ export const ProductDetail = () => {
                             <div className="h-[46px] w-[3px] bg-gray-800 absolute -left-[17px] top-[178px] rounded-l-lg"></div>
                             <div className="h-[64px] w-[3px] bg-gray-800 absolute -right-[17px] top-[142px] rounded-r-lg"></div>
                             <div className="rounded-[2rem] overflow-hidden w-full h-full bg-white relative">
-                                <img
-                                    key={selectedImage}
-                                    src={images[selectedImage]}
-                                    alt={product.title}
-                                    className="w-full h-full object-cover"
-                                />
+                                {/* Sliding Container */}
+                                <div
+                                    className="flex h-full transition-transform duration-500 ease-in-out bg-white"
+                                    style={{ transform: `translateX(-${selectedImage * 100}%)` }}
+                                >
+                                    {images.map((img, idx) => (
+                                        <div key={idx} className="min-w-full h-full">
+                                            <img
+                                                src={img}
+                                                alt={`${product.title} ${idx + 1}`}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
                                 {/* Status Bar Overlay */}
                                 <div className="absolute top-0 left-0 w-full h-12 px-6 flex justify-between items-center z-20 pt-2">
                                     <span className="text-white font-semibold text-xs ml-2">9:41</span>
