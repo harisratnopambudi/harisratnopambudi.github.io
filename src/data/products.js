@@ -1,17 +1,17 @@
-import loginHotspot1Main from '../assets/products/loginhotspot1/main.jpg';
-import loginHotspot1Img2 from '../assets/products/loginhotspot1/img2.jpg';
-import loginHotspot1Img3 from '../assets/products/loginhotspot1/img3.jpg';
-import loginHotspot1Img4 from '../assets/products/loginhotspot1/img4.jpg';
+import loginHotspot1Main from '../assets/products/loginhotspot1/login-mobile.png';
+import loginHotspot1Img2 from '../assets/products/loginhotspot1/status-mobile.png';
+import loginHotspot1Img3 from '../assets/products/loginhotspot1/logout-mobile.png';
+import loginHotspot1Img4 from '../assets/products/loginhotspot1/error-mobile.png';
 
-import loginHotspot2Main from '../assets/products/loginhotspot2/main.jpg';
-import loginHotspot2Img2 from '../assets/products/loginhotspot2/img2.jpg';
-import loginHotspot2Img3 from '../assets/products/loginhotspot2/img3.jpg';
-import loginHotspot2Img4 from '../assets/products/loginhotspot2/img4.jpg';
+import loginHotspot2Main from '../assets/products/loginhotspot2/login-mobile.png';
+import loginHotspot2Img2 from '../assets/products/loginhotspot2/status-mobile.png';
+import loginHotspot2Img3 from '../assets/products/loginhotspot2/menu-mobile.png';
+import loginHotspot2Img4 from '../assets/products/loginhotspot2/info-mobile.png';
 
-import loginHotspot3Main from '../assets/products/loginhotspot3/main.jpg';
-import loginHotspot3Img2 from '../assets/products/loginhotspot3/img2.jpg';
-import loginHotspot3Img3 from '../assets/products/loginhotspot3/img3.jpg';
-import loginHotspot3Img4 from '../assets/products/loginhotspot3/img4.jpg';
+import loginHotspot3Main from '../assets/products/loginhotspot3/login-mobile.png';
+import loginHotspot3Img2 from '../assets/products/loginhotspot3/status-mobile.png';
+import loginHotspot3Img3 from '../assets/products/loginhotspot3/menu-mobile.png';
+import loginHotspot3Img4 from '../assets/products/loginhotspot3/info-mobile.png';
 
 export const PRODUCTS = [
     {
