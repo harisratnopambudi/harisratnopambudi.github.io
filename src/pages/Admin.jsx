@@ -25,6 +25,11 @@ export const Admin = () => {
 
     const [copied, setCopied] = useState(false);
 
+    // Screenshot Tool State
+    const [activeTab, setActiveTab] = useState('generator');
+    const [screenshotUrl, setScreenshotUrl] = useState('https://harisdevlab.online/loginhotspot3/login.html');
+    const [iframeUrl, setIframeUrl] = useState('');
+
     // Simple protection
     const handleLogin = (e) => {
         e.preventDefault();
@@ -121,122 +126,238 @@ export const Admin = () => {
         originalPrice: parseInt(product.originalPrice) || 0
     };
 
+    const handleLoadUrl = (e) => {
+        e.preventDefault();
+        setIframeUrl(screenshotUrl);
+    };
+
+    const handleQuickLink = (filename) => {
+        // Extract base path
+        let basePath = screenshotUrl;
+        if (basePath.includes('.html')) {
+            basePath = basePath.substring(0, basePath.lastIndexOf('/') + 1);
+        } else if (!basePath.endsWith('/')) {
+            basePath = basePath + '/';
+        }
+
+        const newUrl = `${basePath}${filename}`;
+        setScreenshotUrl(newUrl);
+        setIframeUrl(newUrl);
+    };
+
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <h1 className="text-3xl font-bold text-gray-900 mb-8">Product Generator</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-8">Admin Dashboard</h1>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Form */}
-                <div className="space-y-6 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                    <h2 className="text-xl font-bold mb-4">Input Details</h2>
+            {/* Tabs */}
+            <div className="flex space-x-4 mb-8 border-b">
+                <button
+                    className={`pb-4 px-4 font-medium transition-colors ${activeTab === 'generator' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                    onClick={() => setActiveTab('generator')}
+                >
+                    Product Generator
+                </button>
+                <button
+                    className={`pb-4 px-4 font-medium transition-colors ${activeTab === 'screenshot' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                    onClick={() => setActiveTab('screenshot')}
+                >
+                    Screenshot Tool
+                </button>
+            </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Title</label>
-                            <input name="title" value={product.title} onChange={handleChange} className="w-full border p-2 rounded-lg" placeholder="Product Name" />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Category</label>
-                            <input name="category" value={product.category} onChange={handleChange} className="w-full border p-2 rounded-lg" placeholder="e.g. Tools" />
-                        </div>
-                    </div>
+            {activeTab === 'generator' ? (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {/* Form */}
+                    <div className="space-y-6 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h2 className="text-xl font-bold mb-4">Input Details</h2>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Price (IDR)</label>
-                            <input name="price" type="number" value={product.price} onChange={handleChange} className="w-full border p-2 rounded-lg" placeholder="150000" />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Original Price (opt)</label>
-                            <input name="originalPrice" type="number" value={product.originalPrice} onChange={handleChange} className="w-full border p-2 rounded-lg" placeholder="200000" />
-                        </div>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium mb-1">Domain / Label</label>
-                        <input name="domain" value={product.domain} onChange={handleChange} className="w-full border p-2 rounded-lg" placeholder="e.g. SaaS, Offline" />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium mb-1">Demo URL (opt)</label>
-                        <input name="demoUrl" value={product.demoUrl} onChange={handleChange} className="w-full border p-2 rounded-lg" placeholder="https://example.com" />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium mb-1">Short Description</label>
-                        <input name="shortDesc" value={product.shortDesc} onChange={handleChange} className="w-full border p-2 rounded-lg" />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium mb-1">Full Description</label>
-                        <textarea name="desc" value={product.desc} onChange={handleChange} className="w-full border p-2 rounded-lg" rows="3" />
-                    </div>
-
-                    {/* Images Field */}
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Images (URL)</label>
-                        {product.images.map((img, idx) => (
-                            <div key={idx} className="flex gap-2 mb-2">
-                                <input
-                                    value={img}
-                                    onChange={(e) => handleArrayChange(idx, e.target.value, 'images')}
-                                    className="w-full border p-2 rounded-lg"
-                                    placeholder="https://..."
-                                />
-                                <button onClick={() => removeArrayItem(idx, 'images')} className="text-red-500"><Trash2 size={18} /></button>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Title</label>
+                                <input name="title" value={product.title} onChange={handleChange} className="w-full border p-2 rounded-lg" placeholder="Product Name" />
                             </div>
-                        ))}
-                        <Button type="button" variant="secondary" size="sm" onClick={() => addArrayItem('images')} className="mt-1">
-                            <Plus size={16} className="mr-1" /> Add Image
-                        </Button>
-                    </div>
-
-                    {/* Features Field */}
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Features</label>
-                        {product.features.map((feat, idx) => (
-                            <div key={idx} className="flex gap-2 mb-2">
-                                <input
-                                    value={feat}
-                                    onChange={(e) => handleArrayChange(idx, e.target.value, 'features')}
-                                    className="w-full border p-2 rounded-lg"
-                                    placeholder="Feature name"
-                                />
-                                <button onClick={() => removeArrayItem(idx, 'features')} className="text-red-500"><Trash2 size={18} /></button>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Category</label>
+                                <input name="category" value={product.category} onChange={handleChange} className="w-full border p-2 rounded-lg" placeholder="e.g. Tools" />
                             </div>
-                        ))}
-                        <Button type="button" variant="secondary" size="sm" onClick={() => addArrayItem('features')} className="mt-1">
-                            <Plus size={16} className="mr-1" /> Add Feature
-                        </Button>
-                    </div>
-                </div>
-
-                {/* Preview & Output */}
-                <div className="space-y-8">
-                    <div>
-                        <h2 className="text-xl font-bold mb-4">Card Preview</h2>
-                        <div className="max-w-sm">
-                            <ProductCard product={previewProduct} />
                         </div>
-                    </div>
 
-                    <div className="bg-slate-900 rounded-2xl p-6 text-white relative">
-                        <h2 className="text-lg font-bold mb-4 text-slate-300">Generated Config Code</h2>
-                        <div className="absolute top-4 right-4">
-                            <Button variant="secondary" onClick={copyToClipboard} className="bg-slate-700 text-white border-none hover:bg-slate-600">
-                                {copied ? <Check size={18} /> : <Copy size={18} />}
-                                <span className="ml-2">{copied ? 'Copied' : 'Copy'}</span>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Price (IDR)</label>
+                                <input name="price" type="number" value={product.price} onChange={handleChange} className="w-full border p-2 rounded-lg" placeholder="150000" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Original Price (opt)</label>
+                                <input name="originalPrice" type="number" value={product.originalPrice} onChange={handleChange} className="w-full border p-2 rounded-lg" placeholder="200000" />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium mb-1">Domain / Label</label>
+                            <input name="domain" value={product.domain} onChange={handleChange} className="w-full border p-2 rounded-lg" placeholder="e.g. SaaS, Offline" />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium mb-1">Demo URL (opt)</label>
+                            <input name="demoUrl" value={product.demoUrl} onChange={handleChange} className="w-full border p-2 rounded-lg" placeholder="https://example.com" />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium mb-1">Short Description</label>
+                            <input name="shortDesc" value={product.shortDesc} onChange={handleChange} className="w-full border p-2 rounded-lg" />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium mb-1">Full Description</label>
+                            <textarea name="desc" value={product.desc} onChange={handleChange} className="w-full border p-2 rounded-lg" rows="3" />
+                        </div>
+
+                        {/* Images Field */}
+                        <div>
+                            <label className="block text-sm font-medium mb-2">Images (URL)</label>
+                            {product.images.map((img, idx) => (
+                                <div key={idx} className="flex gap-2 mb-2">
+                                    <input
+                                        value={img}
+                                        onChange={(e) => handleArrayChange(idx, e.target.value, 'images')}
+                                        className="w-full border p-2 rounded-lg"
+                                        placeholder="https://..."
+                                    />
+                                    <button onClick={() => removeArrayItem(idx, 'images')} className="text-red-500"><Trash2 size={18} /></button>
+                                </div>
+                            ))}
+                            <Button type="button" variant="secondary" size="sm" onClick={() => addArrayItem('images')} className="mt-1">
+                                <Plus size={16} className="mr-1" /> Add Image
                             </Button>
                         </div>
-                        <pre className="bg-slate-950 p-4 rounded-xl overflow-x-auto text-sm font-mono text-green-400">
-                            {generateCode()}
-                        </pre>
-                        <p className="text-slate-500 text-xs mt-4">
-                            Instructions: Copy this code and paste it into <code>src/data/products.js</code> inside the <code>PRODUCTS</code> array.
-                        </p>
+
+                        {/* Features Field */}
+                        <div>
+                            <label className="block text-sm font-medium mb-2">Features</label>
+                            {product.features.map((feat, idx) => (
+                                <div key={idx} className="flex gap-2 mb-2">
+                                    <input
+                                        value={feat}
+                                        onChange={(e) => handleArrayChange(idx, e.target.value, 'features')}
+                                        className="w-full border p-2 rounded-lg"
+                                        placeholder="Feature name"
+                                    />
+                                    <button onClick={() => removeArrayItem(idx, 'features')} className="text-red-500"><Trash2 size={18} /></button>
+                                </div>
+                            ))}
+                            <Button type="button" variant="secondary" size="sm" onClick={() => addArrayItem('features')} className="mt-1">
+                                <Plus size={16} className="mr-1" /> Add Feature
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* Preview & Output */}
+                    <div className="space-y-8">
+                        <div>
+                            <h2 className="text-xl font-bold mb-4">Card Preview</h2>
+                            <div className="max-w-sm">
+                                <ProductCard product={previewProduct} />
+                            </div>
+                        </div>
+
+                        <div className="bg-slate-900 rounded-2xl p-6 text-white relative">
+                            <h2 className="text-lg font-bold mb-4 text-slate-300">Generated Config Code</h2>
+                            <div className="absolute top-4 right-4">
+                                <Button variant="secondary" onClick={copyToClipboard} className="bg-slate-700 text-white border-none hover:bg-slate-600">
+                                    {copied ? <Check size={18} /> : <Copy size={18} />}
+                                    <span className="ml-2">{copied ? 'Copied' : 'Copy'}</span>
+                                </Button>
+                            </div>
+                            <pre className="bg-slate-950 p-4 rounded-xl overflow-x-auto text-sm font-mono text-green-400">
+                                {generateCode()}
+                            </pre>
+                            <p className="text-slate-500 text-xs mt-4">
+                                Instructions: Copy this code and paste it into <code>src/data/products.js</code> inside the <code>PRODUCTS</code> array.
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
+            ) : (
+                <div className="flex flex-col lg:flex-row gap-8 items-start">
+                    <div className="w-full lg:w-1/3 space-y-6">
+                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            <h2 className="text-xl font-bold mb-4">Target URL</h2>
+                            <form onSubmit={handleLoadUrl} className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Website URL</label>
+                                    <input
+                                        value={screenshotUrl}
+                                        onChange={(e) => setScreenshotUrl(e.target.value)}
+                                        className="w-full border p-2 rounded-lg"
+                                        placeholder="https://..."
+                                    />
+                                </div>
+                                <Button className="w-full justify-center">Load Website</Button>
+                            </form>
+                        </div>
+
+                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            <h2 className="text-xl font-bold mb-4">Quick Links (MikroTik)</h2>
+                            <div className="grid grid-cols-2 gap-2">
+                                <Button variant="outline" size="sm" onClick={() => handleQuickLink('login.html')}>Login</Button>
+                                <Button variant="outline" size="sm" onClick={() => handleQuickLink('status.html')}>Status</Button>
+                                <Button variant="outline" size="sm" onClick={() => handleQuickLink('logout.html')}>Logout</Button>
+                                <Button variant="outline" size="sm" onClick={() => handleQuickLink('alogin.html')}>ALogin (Redirect)</Button>
+                                <Button variant="outline" size="sm" onClick={() => handleQuickLink('error.html')}>Error</Button>
+                                <Button variant="outline" size="sm" onClick={() => handleQuickLink('menu.html')}>Menu</Button>
+                                <Button variant="outline" size="sm" onClick={() => handleQuickLink('info.html')}>Info</Button>
+                                <Button variant="outline" size="sm" onClick={() => handleQuickLink('contact.html')}>Contact</Button>
+                            </div>
+                            <p className="text-xs text-gray-500 mt-4">
+                                *Buttons automatically replace the filename in the URL above.
+                            </p>
+                        </div>
+
+                        <div className="bg-blue-50 p-6 rounded-2xl border border-blue-100">
+                            <h3 className="font-bold text-blue-800 mb-2">Instructions</h3>
+                            <p className="text-sm text-blue-700 mb-2">
+                                1. Enter the full URL of your login page (e.g., .../login.html).
+                            </p>
+                            <p className="text-sm text-blue-700 mb-2">
+                                2. Click "Load Website".
+                            </p>
+                            <p className="text-sm text-blue-700 mb-2">
+                                3. Use Quick Links to switch pages without retyping.
+                            </p>
+                            <p className="text-sm text-blue-700">
+                                4. Use your computer's <b>Snipping Tool</b> to capture the phone screen area on the right.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="w-full lg:w-2/3 flex justify-center bg-gray-100 p-8 rounded-3xl min-h-[950px]">
+                        {/* Phone Mockup Frame */}
+                        <div className="relative border-gray-900 bg-gray-900 border-[14px] rounded-[2.5rem] h-[896px] w-[414px] shadow-2xl">
+                            <div className="w-[148px] h-[18px] bg-gray-900 top-0 rounded-b-[1rem] left-1/2 -translate-x-1/2 absolute z-10"></div>
+                            <div className="h-[32px] w-[3px] bg-gray-900 absolute -left-[17px] top-[72px] rounded-l-lg"></div>
+                            <div className="h-[46px] w-[3px] bg-gray-900 absolute -left-[17px] top-[124px] rounded-l-lg"></div>
+                            <div className="h-[46px] w-[3px] bg-gray-900 absolute -left-[17px] top-[178px] rounded-l-lg"></div>
+                            <div className="h-[64px] w-[3px] bg-gray-900 absolute -right-[17px] top-[142px] rounded-r-lg"></div>
+
+                            <div className="rounded-[2rem] overflow-hidden w-full h-full bg-white relative">
+                                {iframeUrl ? (
+                                    <iframe
+                                        src={iframeUrl}
+                                        className="w-full h-full border-0"
+                                        title="Preview"
+                                        sandbox="allow-same-origin allow-scripts allow-forms" // Relaxed sandbox for login forms
+                                    />
+                                ) : (
+                                    <div className="flex items-center justify-center h-full text-gray-400">
+                                        Enter URL to Load
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
