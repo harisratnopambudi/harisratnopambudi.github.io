@@ -196,8 +196,8 @@ export const Admin = () => {
                 setCaptureStatus(`Loading ${page} (${i + 1}/${pages.length})...`);
                 setIframeUrl(url);
 
-                // Wait for load + render (increased to 5s for CSS)
-                await new Promise(resolve => setTimeout(resolve, 5000));
+                // Wait for load + render (adjusted to 2s as requested)
+                await new Promise(resolve => setTimeout(resolve, 2000));
 
                 setCaptureStatus(`Capturing ${page}...`);
 
