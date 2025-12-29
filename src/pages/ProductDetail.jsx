@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { PRODUCTS } from '../data/products';
 import { Button } from '../components/ui/Button';
-import { ArrowLeft, Check, ShoppingCart, Share2, Wifi, Battery, Signal, Lock, RefreshCw, ChevronLeft, ChevronRight, Book, Layers } from 'lucide-react';
+import { ArrowLeft, Check, ShoppingCart, Share2, Wifi, Battery, Signal } from 'lucide-react';
 
 export const ProductDetail = () => {
     const { id } = useParams();
@@ -136,31 +136,7 @@ export const ProductDetail = () => {
                                         <Battery size={12} className="text-white fill-white" />
                                     </div>
                                 </div>
-                                {/* Safari Browser Overlay */}
-                                {/* Top Bar (Address) */}
-                                <div className="absolute top-12 left-0 w-full px-4 z-20">
-                                    <div className="bg-white/90 backdrop-blur-md rounded-xl py-2 px-3 flex items-center shadow-sm border border-gray-100">
-                                        <div className="text-gray-400 mr-2"><span className="text-xs">AA</span></div>
-                                        <Lock size={10} className="text-gray-400 mr-1" />
-                                        <div className="flex-1 text-center text-xs font-medium text-gray-700 truncate mx-2">
-                                            {new URL(product.demoUrl || 'https://google.com').hostname}
-                                        </div>
-                                        <RefreshCw size={10} className="text-gray-400" />
-                                    </div>
-                                </div>
 
-                                {/* Bottom Bar (Nav) */}
-                                <div className="absolute bottom-0 left-0 w-full h-[88px] bg-white/95 backdrop-blur-xl border-t border-gray-200 z-20 rounded-b-[2rem] flex flex-col justify-end">
-                                    <div className="flex justify-between items-start px-6 pb-8 pt-4 text-blue-500">
-                                        <ChevronLeft size={24} className="text-gray-300" /> {/* Disabled state */}
-                                        <ChevronRight size={24} className="text-gray-300" />
-                                        <Share2 size={24} />
-                                        <Book size={24} />
-                                        <Layers size={24} />
-                                    </div>
-                                    {/* Home Indicator */}
-                                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-gray-900 rounded-full"></div>
-                                </div>
                             </div>
                         </div>
                     </div>
