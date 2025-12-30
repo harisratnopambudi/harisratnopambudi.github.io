@@ -14,7 +14,39 @@ import loginHotspot3Img2 from '../assets/products/loginhotspot3/status-mobile.pn
 import loginHotspot3Img3 from '../assets/products/loginhotspot3/menu-mobile.png';
 import loginHotspot3Img4 from '../assets/products/loginhotspot3/info-mobile.png';
 
+import loginHotspot4Main from '../assets/products/loginhotspot4/login.png';
+import loginHotspot4Img1 from '../assets/products/loginhotspot4/1.png';
+import loginHotspot4Img2 from '../assets/products/loginhotspot4/2.png';
+import loginHotspot4Img3 from '../assets/products/loginhotspot4/3.png';
+import loginHotspot4Img4 from '../assets/products/loginhotspot4/4.png';
+import loginHotspot4Img5 from '../assets/products/loginhotspot4/5.png';
+import loginHotspot4Img6 from '../assets/products/loginhotspot4/6.png';
+import loginHotspot4Img7 from '../assets/products/loginhotspot4/7.png';
+
 export const PRODUCTS = [
+    {
+        id: 1767124084560,
+        title: "LoginHotspot4",
+        price: 69900,
+        originalPrice: 120000,
+        category: "Captive Login",
+        domain: "Offline License",
+        shortDesc: "Template Login Page MikroTik Premium dengan desain modern, fitur Dual Login (Voucher/Member), integrasi WhatsApp otomatis untuk transaksi, dan konfigurasi mudah yang siap pakai.",
+        desc: "Login Hotspot Premium V4 adalah template login MikroTik yang mengutamakan tampilan modern, responsif, dan ringan untuk semua perangkat. Didesain dengan alur antarmuka yang mulus, navigasi intuitif, serta elemen informatif yang fleksibel, template ini cocok untuk sekolah maupun bisnis hotspot. Tersedia integrasi kontak admin langsung, halaman info, serta struktur yang mendukung pengalaman login cepat dan stabil, membantu pengelola hotspot tampil lebih profesional tanpa mengorbankan performa dan kenyamanan pengguna.",
+        demoUrl: "https://harisdevlab.online/loginhotspot4/login.html",
+        img: loginHotspot4Main,
+        images: [
+            loginHotspot4Main,
+            loginHotspot4Img1,
+            loginHotspot4Img2,
+            loginHotspot4Img3,
+            loginHotspot4Img4,
+            loginHotspot4Img5,
+            loginHotspot4Img6,
+            loginHotspot4Img7
+        ],
+        features: ["Dual Mode Login", "Halaman Penjualan Pulsa", "Menu Pembelian Token Listrik PLN", "Fitur Chat Admin", "Tampilan Mobile App Experience", "Proteksi Keamanan Built-in"]
+    },
     {
         id: 1766940225962,
         title: "LoginHotspot3",
