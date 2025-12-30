@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ProductCard } from '../components/ProductCard';
 import { Button } from '../components/ui/Button';
-import { Plus, Trash2, Copy, Check, Download, Loader2, Mail } from 'lucide-react';
+import { Plus, Trash2, Copy, Check, Download, Loader2, Mail, MessageSquare } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
@@ -102,6 +102,8 @@ export const Admin = () => {
         licenseKey: '',
         fileLink: ''
     });
+
+    const [orderNumber, setOrderNumber] = useState('');
 
     const [copied, setCopied] = useState(false);
 
@@ -381,6 +383,12 @@ export const Admin = () => {
                 >
                     Email Sender
                 </button>
+                <button
+                    className={`pb-4 px-4 font-medium transition-colors ${activeTab === 'order-chat' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                    onClick={() => setActiveTab('order-chat')}
+                >
+                    Order Chat
+                </button>
             </div>
 
             {activeTab === 'generator' ? (
@@ -582,7 +590,7 @@ export const Admin = () => {
                         </div>
                     </div>
                 </div>
-            ) : (
+            ) : activeTab === 'email' ? (
                 <div className="max-w-2xl mx-auto">
                     <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-lg">
                         <h2 className="text-2xl font-bold mb-6 flex items-center">
@@ -707,8 +715,59 @@ Shopee: https://shopee.co.id/harisdevlab`);
                         </div>
                     </div>
                 </div>
-            )
-            }
+            ) : activeTab === 'order-chat' ? (
+                <div className="max-w-2xl mx-auto">
+                    <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-lg">
+                        <h2 className="text-2xl font-bold mb-6 flex items-center">
+                            <MessageSquare className="mr-3 text-blue-600" />
+                            Order Status Chat
+                        </h2>
+
+                        <div className="space-y-6">
+                            <div>
+                                <label className="block text-sm font-medium mb-1">No. Pesanan</label>
+                                <input
+                                    value={orderNumber}
+                                    onChange={(e) => setOrderNumber(e.target.value)}
+                                    className="w-full border p-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                    placeholder="e.g. 251230PUVFNH59"
+                                />
+                            </div>
+
+                            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Generated Message</label>
+                                <textarea
+                                    className="w-full bg-white border p-3 rounded-lg text-sm font-mono h-32 focus:outline-none resize-none"
+                                    readOnly
+                                    value={orderNumber ? `Halo Admin, mohon bantuannya untuk merubah status pesanan berikut menjadi Terkirim karena produk digital sudah dikirim via email/chat.
+
+No. Pesanan: ${orderNumber}
+
+Terima kasih.` : 'Enter an Order Number to generate message...'}
+                                />
+                            </div>
+
+                            <Button
+                                onClick={() => {
+                                    const text = `Halo Admin, mohon bantuannya untuk merubah status pesanan berikut menjadi Terkirim karena produk digital sudah dikirim via email/chat.
+
+No. Pesanan: ${orderNumber}
+
+Terima kasih.`;
+                                    navigator.clipboard.writeText(text);
+                                    setCopied(true);
+                                    setTimeout(() => setCopied(false), 2000);
+                                }}
+                                className="w-full py-4 text-lg justify-center bg-blue-600 hover:bg-blue-700"
+                                disabled={!orderNumber}
+                            >
+                                {copied ? <Check className="mr-2" /> : <Copy className="mr-2" />}
+                                {copied ? 'Copied to Clipboard!' : 'Copy to Clipboard'}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            ) : null}
         </div >
     );
 };
