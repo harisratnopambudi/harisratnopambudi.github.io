@@ -45,6 +45,7 @@ export const PRODUCTS = [
             loginHotspot4Img6,
             loginHotspot4Img7
         ],
+        size: "314 KB",
         features: ["Dual Mode Login", "Halaman Penjualan Pulsa", "Menu Pembelian Token Listrik PLN", "Fitur Chat Admin", "Tampilan Mobile App Experience", "Proteksi Keamanan Built-in"]
     },
     {
