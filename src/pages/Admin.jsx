@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ProductCard } from '../components/ProductCard';
 import { DeviceFrame } from '../components/DeviceFrame';
 import { Button } from '../components/ui/Button';
-import { Plus, Trash2, Copy, Check, Mail, MessageSquare, Loader2, Download } from 'lucide-react';
-import { SAVED_LINKS } from '../data/savedLinks';
-import { PRODUCTS } from '../data/products';
+import { Plus, Trash2, Copy, Check, Mail, MessageSquare, Loader2, Download, Upload, Save, Edit, FileJson } from 'lucide-react';
+// import { SAVED_LINKS } from '../data/savedLinks'; // REMOVED - Using Dynamic DB
+// import { PRODUCTS } from '../data/products'; // REMOVED
 import { supabase } from '../lib/supabaseClient';
 
 // CONFIGURATION & SECRETS
@@ -23,12 +23,14 @@ export const Admin = () => {
         originalPrice: '',
         category: '',
         domain: '',
-        demoUrl: '',
-        shortDesc: '',
         desc: '',
+        demoUrl: '',
+        shopeeUrl: '', // Add this
         img: 'https://placehold.co/600x338/2563eb/ffffff?text=Thumbnail',
         images: ['https://placehold.co/600x338/2563eb/ffffff?text=Thumbnail'],
-        features: ['']
+        features: [''],
+        size: '', // Manual override size
+        zipUrl: '' // GDrive Link definition
     });
 
     // Email/License State
@@ -38,7 +40,14 @@ export const Admin = () => {
         licenseKey: '',
         fileLink: ''
     });
-    const [isGenerating, setIsGenerating] = useState(false);
+    const [isGenerating, setIsGenerating] = useState(false); // Valid state
+    const [isSaving, setIsSaving] = useState(false);
+    const [uploadingIndex, setUploadingIndex] = useState(null); // Track which index is uploading
+    const [editingId, setEditingId] = useState(null); // ID if editing existing product
+
+    // Management State
+    const [manageProducts, setManageProducts] = useState([]);
+    const [isLoadingManage, setIsLoadingManage] = useState(false);
 
     // Screenshot Tool State
     const [screenshotUrl, setScreenshotUrl] = useState('https://harisdevlab.online/loginhotspot3/login.html');
@@ -135,6 +144,7 @@ export const Admin = () => {
     shortDesc: "${product.shortDesc}",
     desc: "${product.desc}",
     demoUrl: "${product.demoUrl}",
+    shopeeUrl: "${product.shopeeUrl}",
     img: "${product.images[0] || product.img}",
     images: ${JSON.stringify(product.images, null, 6).replace(/\[\s+/g, '[').replace(/\s+\]/g, ']')},
     features: ${JSON.stringify(product.features)}
@@ -152,6 +162,168 @@ export const Admin = () => {
         ...product,
         price: parseInt(product.price) || 0,
         originalPrice: parseInt(product.originalPrice) || 0
+    };
+
+    // --- Database & Storage Handlers ---
+    const handleImageUpload = async (e, index) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setUploadingIndex(index);
+        try {
+            // 1. Upload to Supabase Storage
+            const fileName = `img-${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
+            const { data, error } = await supabase.storage
+                .from('product-images')
+                .upload(fileName, file, {
+                    cacheControl: '3600',
+                    upsert: false
+                });
+
+            if (error) throw error;
+
+            // 2. Get Public URL
+            const { data: { publicUrl } } = supabase.storage
+                .from('product-images')
+                .getPublicUrl(fileName);
+
+            // 3. Update State
+            handleArrayChange(index, publicUrl, 'images');
+
+        } catch (error) {
+            console.error('Upload error:', error);
+            alert('Upload failed: ' + (error.message || 'Unknown error'));
+        } finally {
+            setUploadingIndex(null);
+        }
+    };
+
+
+
+    // --- Management Handlers ---
+    const fetchManageProducts = async () => {
+        setIsLoadingManage(true);
+        try {
+            const { data, error } = await supabase
+                .from('products')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            setManageProducts(data || []);
+        } catch (err) {
+            console.error('Error fetching products:', err);
+            alert('Failed to load products.');
+        } finally {
+            setIsLoadingManage(false);
+        }
+    };
+
+    const handleEditProduct = (prod) => {
+        // Map DB columns back to state
+        setProduct({
+            id: prod.id, // Keep DB ID
+            title: prod.title,
+            price: prod.price,
+            originalPrice: prod.original_price,
+            category: prod.category,
+            domain: prod.domain,
+            shortDesc: prod.short_desc,
+            desc: prod.description,
+            img: prod.image_url,
+            images: prod.gallery_urls || [],
+            features: prod.features || [],
+            demoUrl: prod.demo_url,
+            shopeeUrl: prod.shopee_url,
+            zipUrl: prod.zip_url || '',
+            size: prod.size || ''
+        });
+        setEditingId(prod.id);
+        setActiveTab('generator');
+    };
+
+    const handleDeleteProduct = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this product?")) return;
+
+        try {
+            const { error } = await supabase.from('products').delete().eq('id', id);
+            if (error) throw error;
+            fetchManageProducts(); // Refresh list
+        } catch (err) {
+            console.error('Delete error:', err);
+            alert('Failed to delete product.');
+        }
+    };
+
+    const handleExportJson = () => {
+        const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
+            JSON.stringify(manageProducts, null, 2)
+        )}`;
+        const linkContainer = document.createElement("a");
+        linkContainer.href = jsonString;
+        linkContainer.download = "products_backup.json";
+        linkContainer.click();
+    };
+
+
+
+    // Update Save Handler for Edit Mode
+    const handleSaveToDatabase = async () => {
+        const mode = editingId ? 'Update' : 'Save';
+        if (!window.confirm(`${mode} this product to the Database?`)) return;
+
+        setIsSaving(true);
+        try {
+            const payload = {
+                title: product.title,
+                price: parseFloat(product.price) || 0,
+                original_price: parseFloat(product.originalPrice) || 0,
+                category: product.category,
+                domain: product.domain,
+                short_desc: product.shortDesc,
+                description: product.desc,
+                image_url: product.images[0] || product.img,
+                gallery_urls: product.images,
+                features: product.features,
+                demo_url: product.demoUrl || null,
+                shopee_url: product.shopeeUrl || null,
+                zip_url: product.zipUrl || null,
+                size: product.size || null
+            };
+
+            let error;
+            if (editingId) {
+                // Update existing
+                const { error: updateError } = await supabase
+                    .from('products')
+                    .update(payload)
+                    .eq('id', editingId);
+                error = updateError;
+            } else {
+                // Insert new
+                const { error: insertError } = await supabase
+                    .from('products')
+                    .insert([payload]);
+                error = insertError;
+            }
+
+            if (error) throw error;
+
+            alert(`✅ Product ${mode}d Successfully!`);
+            // Reset state after success
+            if (editingId) {
+                setEditingId(null);
+                setProduct({
+                    ...product,
+                    id: Date.now() // Reset ID for next new product
+                });
+            }
+        } catch (err) {
+            console.error("Save error:", err);
+            alert(`❌ Failed to ${mode.toLowerCase()}: ` + err.message);
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     // --- Screenshot Handlers ---
@@ -187,7 +359,7 @@ export const Admin = () => {
     };
 
     const handleRecordTransaction = async () => {
-        const productInfo = PRODUCTS.find(p => p.title === emailData.productName);
+        const productInfo = manageProducts.find(p => p.title === emailData.productName);
         const price = productInfo ? productInfo.price : 0;
         try {
             const { error } = await supabase
@@ -256,6 +428,21 @@ export const Admin = () => {
     useEffect(() => {
         if (activeTab === 'transactions') {
             fetchTransactions();
+        } else if (activeTab === 'manage' || activeTab === 'email') {
+            fetchManageProducts();
+        }
+    }, [activeTab]);
+
+    // Clear editing state when switching tabs manually
+    useEffect(() => {
+        if (activeTab !== 'generator' && editingId) {
+            // Optional: Alert user they are leaving edit mode? 
+            // For now we keep state but maybe reset if they start fresh.
+            // Let's reset if they go to 'manage' to avoid confusion.
+            if (activeTab === 'manage') {
+                setEditingId(null);
+                setProduct({ ...product, id: Date.now(), title: '', price: '', category: '' }); // Partial reset or full reset
+            }
         }
     }, [activeTab]);
 
@@ -297,7 +484,8 @@ export const Admin = () => {
 
             {/* Tabs */}
             <div className="flex space-x-4 mb-8 border-b overflow-x-auto">
-                <button className={`pb-4 px-4 font-medium transition-colors whitespace-nowrap ${activeTab === 'generator' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`} onClick={() => setActiveTab('generator')}>Product Generator</button>
+                <button className={`pb-4 px-4 font-medium transition-colors whitespace-nowrap ${activeTab === 'generator' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`} onClick={() => setActiveTab('generator')}>{editingId ? 'Edit Product' : 'Product Generator'}</button>
+                <button className={`pb-4 px-4 font-medium transition-colors whitespace-nowrap ${activeTab === 'manage' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`} onClick={() => setActiveTab('manage')}>Manage Products</button>
                 <button className={`pb-4 px-4 font-medium transition-colors whitespace-nowrap ${activeTab === 'screenshot' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`} onClick={() => setActiveTab('screenshot')}>Screenshot Tool</button>
                 <button className={`pb-4 px-4 font-medium transition-colors whitespace-nowrap ${activeTab === 'email' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`} onClick={() => setActiveTab('email')}>Email Sender</button>
                 <button className={`pb-4 px-4 font-medium transition-colors whitespace-nowrap ${activeTab === 'transactions' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`} onClick={() => setActiveTab('transactions')}>Transactions</button>
@@ -343,6 +531,22 @@ export const Admin = () => {
                         </div>
 
                         <div>
+                            <label className="block text-sm font-medium mb-1">Shopee URL (opt)</label>
+                            <input name="shopeeUrl" value={product.shopeeUrl} onChange={handleChange} className="w-full border p-2 rounded-lg" placeholder="https://shopee.co.id/..." />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Size (Manual)</label>
+                                <input name="size" value={product.size} onChange={handleChange} className="w-full border p-2 rounded-lg" placeholder="e.g. 5 MB" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Backup Link (GDrive)</label>
+                                <input name="zipUrl" value={product.zipUrl} onChange={handleChange} className="w-full border p-2 rounded-lg" placeholder="https://drive.google..." />
+                            </div>
+                        </div>
+
+                        <div>
                             <label className="block text-sm font-medium mb-1">Short Description</label>
                             <input name="shortDesc" value={product.shortDesc} onChange={handleChange} className="w-full border p-2 rounded-lg" />
                         </div>
@@ -356,8 +560,16 @@ export const Admin = () => {
                         <div>
                             <label className="block text-sm font-medium mb-2">Images (URL)</label>
                             {product.images.map((img, idx) => (
-                                <div key={idx} className="flex gap-2 mb-2">
-                                    <input value={img} onChange={(e) => handleArrayChange(idx, e.target.value, 'images')} className="w-full border p-2 rounded-lg" placeholder="https://..." />
+                                <div key={idx} className="flex gap-2 mb-2 items-center">
+                                    <div className="relative flex-1">
+                                        <input value={img} onChange={(e) => handleArrayChange(idx, e.target.value, 'images')} className="w-full border p-2 rounded-lg pr-10" placeholder="https://..." />
+                                        <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                                            <label className="cursor-pointer p-1 hover:bg-gray-100 rounded-full block" title="Upload Image">
+                                                {uploadingIndex === idx ? <Loader2 size={16} className="animate-spin text-blue-600" /> : <Upload size={16} className="text-gray-500" />}
+                                                <input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e, idx)} disabled={uploadingIndex !== null} />
+                                            </label>
+                                        </div>
+                                    </div>
                                     <button onClick={() => removeArrayItem(idx, 'images')} className="text-red-500"><Trash2 size={18} /></button>
                                 </div>
                             ))}
@@ -386,14 +598,81 @@ export const Admin = () => {
 
                         <div className="bg-slate-900 rounded-2xl p-6 text-white relative">
                             <h2 className="text-lg font-bold mb-4 text-slate-300">Generated Config Code</h2>
-                            <div className="absolute top-4 right-4">
-                                <Button variant="secondary" onClick={copyToClipboard} className="bg-slate-700 text-white border-none hover:bg-slate-600">
+                            <div className="absolute top-4 right-4 flex gap-2">
+                                <Button onClick={handleSaveToDatabase} disabled={isSaving} className={`${editingId ? 'bg-orange-500 hover:bg-orange-600' : 'bg-green-600 hover:bg-green-700'} text-white border-none`}>
+                                    {isSaving ? <Loader2 className="animate-spin" size={18} /> : (editingId ? <Edit size={18} /> : <Save size={18} />)}
+                                    <span className="ml-2">{isSaving ? 'Processing...' : (editingId ? 'Update Product' : 'Save to DB')}</span>
+                                </Button>
+                                <Button onClick={copyToClipboard} className="bg-slate-700 text-white border-none hover:bg-slate-600">
                                     {copied ? <Check size={18} /> : <Copy size={18} />}
-                                    <span className="ml-2">{copied ? 'Copied' : 'Copy'}</span>
+                                    <span className="ml-2">{copied ? 'Copied' : 'Copy Code'}</span>
                                 </Button>
                             </div>
                             <pre className="bg-slate-950 p-4 rounded-xl overflow-x-auto text-sm font-mono text-green-400">{generateCode()}</pre>
                             <p className="text-slate-500 text-xs mt-4">Instructions: Copy into <code>src/data/products.js</code>.</p>
+                        </div>
+                    </div>
+                </div>
+            ) : activeTab === 'manage' ? (
+                <div className="space-y-6">
+                    <div className="flex justify-between items-center bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <div>
+                            <h2 className="text-2xl font-bold text-gray-800">Product Management</h2>
+                            <p className="text-gray-500">Edit active products or delete old ones.</p>
+                        </div>
+
+                        <div className="flex gap-2">
+                            {/* <Button onClick={handleMigrateLegacy} variant="outline" size="sm" className="text-orange-600 border-orange-200 hover:bg-orange-50">
+                                <Upload size={16} className="mr-2" /> Migrate Legacy
+                            </Button> */}
+                            <Button onClick={fetchManageProducts} variant="outline" size="sm">
+                                {isLoadingManage ? <Loader2 className="animate-spin" size={16} /> : 'Refresh List'}
+                            </Button>
+                            <Button onClick={handleExportJson} variant="outline" size="sm" className="text-blue-600 border-blue-200 hover:bg-blue-50">
+                                <FileJson size={16} className="mr-2" /> Export JSON
+                            </Button>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left text-sm text-gray-600">
+                                <thead className="bg-gray-50 text-gray-900 font-semibold">
+                                    <tr>
+                                        <th className="p-4">Image</th>
+                                        <th className="p-4">Title</th>
+                                        <th className="p-4">Category</th>
+                                        <th className="p-4">Price</th>
+                                        <th className="p-4 text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100">
+                                    {manageProducts.length === 0 ? (
+                                        <tr><td colSpan="5" className="p-8 text-center text-gray-400">No products found in Database.</td></tr>
+                                    ) : (
+                                        manageProducts.map((prod) => (
+                                            <tr key={prod.id} className="hover:bg-gray-50 transition-colors">
+                                                <td className="p-4">
+                                                    <img src={prod.image_url} alt="" className="w-12 h-12 object-cover rounded-lg bg-gray-100" />
+                                                </td>
+                                                <td className="p-4 font-medium text-gray-900">{prod.title}</td>
+                                                <td className="p-4">{prod.category}</td>
+                                                <td className="p-4 text-green-600 font-medium">Rp {prod.price?.toLocaleString('id-ID')}</td>
+                                                <td className="p-4 text-center">
+                                                    <div className="flex justify-center gap-2">
+                                                        <Button variant="outline" size="sm" onClick={() => handleEditProduct(prod)} className="text-blue-600 border-blue-200 hover:bg-blue-50">
+                                                            <Edit size={16} /> <span className="ml-1">Edit</span>
+                                                        </Button>
+                                                        <Button variant="outline" size="sm" onClick={() => handleDeleteProduct(prod.id)} className="text-red-600 border-red-200 hover:bg-red-50">
+                                                            <Trash2 size={16} /> <span className="ml-1">Delete</span>
+                                                        </Button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -501,11 +780,15 @@ export const Admin = () => {
                                 <label className="block text-sm font-medium mb-1">Product Name</label>
                                 <select name="productName" value={emailData.productName} onChange={(e) => {
                                     const selectedName = e.target.value;
-                                    const selectedFile = SAVED_LINKS.find(f => f.name === selectedName);
-                                    setEmailData({ ...emailData, productName: selectedName, fileLink: selectedFile ? selectedFile.url : emailData.fileLink });
+                                    const selectedProduct = manageProducts.find(p => p.title === selectedName);
+                                    setEmailData({
+                                        ...emailData,
+                                        productName: selectedName,
+                                        fileLink: selectedProduct ? (selectedProduct.zip_url || '') : ''
+                                    });
                                 }} className="w-full border p-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
                                     <option value="">-- Select Product --</option>
-                                    {SAVED_LINKS.map(file => (<option key={file.id} value={file.name}>{file.name}</option>))}
+                                    {manageProducts.map(prod => (<option key={prod.id} value={prod.title}>{prod.title}</option>))}
                                 </select>
                             </div>
                             <div>
@@ -519,7 +802,7 @@ export const Admin = () => {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium mb-1">Download Link (ZIP)</label>
-                                <input name="fileLink" value={emailData.fileLink} onChange={(e) => setEmailData({ ...emailData, fileLink: e.target.value })} className="w-full border p-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm" placeholder="https://drive.google.com/..." />
+                                <input name="fileLink" value={emailData.fileLink} readOnly className="w-full border p-3 rounded-xl bg-gray-100 text-gray-500 focus:outline-none text-sm cursor-not-allowed" placeholder="Auto-filled from Product Data (Manage Link via Edit Product)" />
                             </div>
                             <div className="pt-4">
                                 <Button onClick={async () => {
@@ -611,7 +894,8 @@ export const Admin = () => {
                         </div>
                     </div>
                 </div>
-            ) : null}
+            ) : null
+            }
         </div >
     );
 };

@@ -1,69 +1,112 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { PRODUCTS } from '../data/products';
+// import { PRODUCTS } from '../data/products'; // REMOVED
 import { Button } from '../components/ui/Button';
 import { ArrowLeft, Check, ShoppingCart, Share2, Wifi, Battery, Signal, MessageCircle } from 'lucide-react';
+import { supabase } from '../lib/supabaseClient';
 
 export const ProductDetail = () => {
     const { id } = useParams();
-    const product = PRODUCTS.find(p => p.id === parseInt(id));
+    // const product = PRODUCTS.find(p => p.id === parseInt(id)); // REMOVED STATIC
     // State for image handling and repo size
     const [selectedImage, setSelectedImage] = useState(0);
     const [repoSize, setRepoSize] = useState(null);
 
     // Derived state pattern: Reset state when ID changes (Recommended by React Docs)
     const [prevId, setPrevId] = useState(id);
-    if (id !== prevId) {
-        setPrevId(id);
-        setSelectedImage(0);
+    const [activeProduct, setActiveProduct] = useState(null); // Rename dbProduct to activeProduct
+    const [isLoading, setIsLoading] = useState(true);
 
-        // Handle Repo Size reset or setting from static data
-        if (product && product.size) {
-            setRepoSize(product.size);
-        } else {
-            setRepoSize(null);
-        }
-    }
+    // Combine static and DB product
+    // const activeProduct = product || dbProduct; // REMOVED
 
-    // Scroll to top on mount and set up slideshow
     useEffect(() => {
-        window.scrollTo(0, 0);
-
-
-        // Slideshow interval
-        let interval;
-        if (product && product.images && product.images.length > 1) {
-            interval = setInterval(() => {
-                setSelectedImage((prev) => (prev + 1) % product.images.length);
-            }, 3000); // Change every 3 seconds
+        // Reset state on ID change
+        if (id !== prevId) {
+            setPrevId(id);
+            setSelectedImage(0);
+            setRepoSize(null);
+            setActiveProduct(null);
+            setIsLoading(true);
         }
 
-        // Fetch Repo Size if githubRepo is defined (Async only)
-        if (product && !product.size && product.githubRepo) {
-            fetch(`https://api.github.com/repos/${product.githubRepo}`)
+        const fetchDbProduct = async () => {
+            setIsLoading(true);
+            try {
+                const { data, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (data) {
+                    const formatted = {
+                        id: data.id,
+                        title: data.title,
+                        price: parseFloat(data.price) || 0,
+                        originalPrice: parseFloat(data.original_price) || 0,
+                        category: data.category,
+                        domain: data.domain,
+                        shortDesc: data.short_desc,
+                        desc: data.description,
+                        img: data.image_url,
+                        images: data.gallery_urls || [data.image_url],
+                        features: data.features || [],
+                        demoUrl: data.demo_url,
+                        shopeeUrl: data.shopee_url,
+                        size: data.size,
+                        githubRepo: data.github_repo
+                    };
+                    setActiveProduct(formatted);
+                    // Init Repo Size if applicable
+                    if (formatted.size) setRepoSize(formatted.size);
+                }
+            } catch (err) {
+                console.error("Error fetching product:", err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchDbProduct();
+
+    }, [id, prevId]); // Removed 'product' dep
+
+    // Slideshow interval (depends on activeProduct)
+    useEffect(() => {
+        let interval;
+        if (activeProduct && activeProduct.images && activeProduct.images.length > 1) {
+            interval = setInterval(() => {
+                setSelectedImage((prev) => (prev + 1) % activeProduct.images.length);
+            }, 3000);
+        }
+        return () => { if (interval) clearInterval(interval); };
+    }, [activeProduct]);
+
+    // Fetch GitHub Size (depends on activeProduct)
+    useEffect(() => {
+        if (activeProduct && !activeProduct.size && activeProduct.githubRepo) {
+            fetch(`https://api.github.com/repos/${activeProduct.githubRepo}`)
                 .then(res => res.json())
                 .then(data => {
                     if (data.size) {
-                        // Size is in KB. Convert to MB if > 1024 KB
                         const sizeKB = data.size;
-                        let formattedSize = '';
-                        if (sizeKB > 1024) {
-                            formattedSize = `${(sizeKB / 1024).toFixed(1)} MB`;
-                        } else {
-                            formattedSize = `${sizeKB} KB`;
-                        }
-                        setRepoSize(formattedSize);
+                        setRepoSize(sizeKB > 1024 ? `${(sizeKB / 1024).toFixed(1)} MB` : `${sizeKB} KB`);
                     }
                 })
                 .catch(err => console.error("Failed to fetch repo size:", err));
         }
+    }, [activeProduct]);
 
-        return () => {
-            if (interval) clearInterval(interval);
-        };
-    }, [id, product]);
+    if (isLoading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+                <p className="text-gray-500">Loading product details...</p>
+            </div>
+        );
+    }
 
-    if (!product) {
+    if (!activeProduct) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">Product Not Found</h2>
@@ -75,18 +118,18 @@ export const ProductDetail = () => {
         );
     }
 
-    // Ensure we have an array of images; fallback to [product.img] if no array
-    const images = product.images && product.images.length > 0 ? product.images : [product.img];
+    // Ensure we have an array of images; fallback to [activeProduct.img] if no array
+    const images = activeProduct.images && activeProduct.images.length > 0 ? activeProduct.images : [activeProduct.img];
 
     const price = new Intl.NumberFormat('id-ID', {
         style: 'currency',
         currency: 'IDR',
         minimumFractionDigits: 0,
         maximumFractionDigits: 0
-    }).format(product.price);
+    }).format(activeProduct.price);
 
     const handleOrder = () => {
-        const message = `Halo Haris DevLab, saya ingin membeli produk "${product.title}" seharga ${price}. Mohon infonya.`;
+        const message = `Halo Haris DevLab, saya ingin membeli produk "${activeProduct.title}" seharga ${price}. Mohon infonya.`;
         const waUrl = `https://wa.me/6287784477751?text=${encodeURIComponent(message)}`;
         window.open(waUrl, '_blank');
     };
@@ -94,8 +137,8 @@ export const ProductDetail = () => {
     const handleShare = () => {
         if (navigator.share) {
             navigator.share({
-                title: product.title,
-                text: `Cek produk ${product.title} di Haris DevLab!`,
+                title: activeProduct.title,
+                text: `Cek produk ${activeProduct.title} di Haris DevLab!`,
                 url: window.location.href,
             });
         } else {
@@ -133,7 +176,7 @@ export const ProductDetail = () => {
                                         <div key={idx} className="min-w-full h-full">
                                             <img
                                                 src={img}
-                                                alt={`${product.title} ${idx + 1}`}
+                                                alt={`${activeProduct.title} ${idx + 1}`}
                                                 className="w-full h-full object-cover"
                                             />
                                         </div>
@@ -160,10 +203,10 @@ export const ProductDetail = () => {
                 <div className="flex flex-col">
                     <div className="flex flex-wrap items-center gap-3 mb-6">
                         <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm shadow-blue-200">
-                            {product.category}
+                            {activeProduct.category}
                         </span>
                         <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border border-gray-200">
-                            {product.domain}
+                            {activeProduct.domain}
                         </span>
                         {repoSize && (
                             <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border border-orange-200">
@@ -173,18 +216,18 @@ export const ProductDetail = () => {
                     </div>
 
                     <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight leading-tight">
-                        {product.title}
+                        {activeProduct.title}
                     </h1>
 
                     <div className="flex flex-col mb-6">
-                        {product.originalPrice && (
+                        {activeProduct.originalPrice && (
                             <span className="text-lg text-gray-400 line-through mb-1">
                                 {new Intl.NumberFormat('id-ID', {
                                     style: 'currency',
                                     currency: 'IDR',
                                     minimumFractionDigits: 0,
                                     maximumFractionDigits: 0
-                                }).format(product.originalPrice)}
+                                }).format(activeProduct.originalPrice)}
                             </span>
                         )}
                         <span className="text-4xl font-bold text-blue-600 tracking-tight">
@@ -193,13 +236,13 @@ export const ProductDetail = () => {
                     </div>
 
                     <div className="prose prose-lg text-gray-600 mb-8 leading-relaxed text-justify">
-                        <p>{product.desc}</p>
+                        <p>{activeProduct.desc}</p>
                     </div>
 
                     <div className="mb-6 bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
                         <h3 className="font-bold text-gray-900 mb-4 text-lg">Product Features</h3>
                         <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            {product.features.map((feature, idx) => (
+                            {activeProduct.features.map((feature, idx) => (
                                 <li key={idx} className="flex items-center text-gray-700 font-medium">
                                     <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center text-green-600 mr-3 flex-shrink-0">
                                         <Check size={14} strokeWidth={3} />
@@ -211,10 +254,10 @@ export const ProductDetail = () => {
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-4">
-                        {product.shopeeUrl ? (
+                        {activeProduct.shopeeUrl ? (
                             <>
                                 <a
-                                    href={product.shopeeUrl}
+                                    href={activeProduct.shopeeUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="flex-1"
@@ -245,8 +288,8 @@ export const ProductDetail = () => {
                             </Button>
                         )}
 
-                        {product.demoUrl && (
-                            <a href={product.demoUrl} target="_blank" rel="noopener noreferrer" className="flex-none">
+                        {activeProduct.demoUrl && (
+                            <a href={activeProduct.demoUrl} target="_blank" rel="noopener noreferrer" className="flex-none">
                                 <Button variant="outline" className="h-full px-6 py-4">
                                     Live Demo
                                 </Button>
