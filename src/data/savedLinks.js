@@ -13,5 +13,10 @@ export const SAVED_LINKS = [
         id: 3,
         name: 'LoginHotspot3',
         url: 'https://drive.google.com/file/d/12Db_moJ624-fvc0lzfBAsAG5yOZDVR4_/view?usp=drive_link'
+    },
+    {
+        id: 4,
+        name: 'LoginHotspot4',
+        url: 'https://drive.google.com/file/d/1PQ0E0fqautmFs6G0B7e3UlBkpxZZivOn/view?usp=drive_link'
     }
 ];
