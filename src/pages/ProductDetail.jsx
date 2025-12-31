@@ -7,14 +7,28 @@ import { ArrowLeft, Check, ShoppingCart, Share2, Wifi, Battery, Signal, MessageC
 export const ProductDetail = () => {
     const { id } = useParams();
     const product = PRODUCTS.find(p => p.id === parseInt(id));
+    // State for image handling and repo size
     const [selectedImage, setSelectedImage] = useState(0);
     const [repoSize, setRepoSize] = useState(null);
+
+    // Derived state pattern: Reset state when ID changes (Recommended by React Docs)
+    const [prevId, setPrevId] = useState(id);
+    if (id !== prevId) {
+        setPrevId(id);
+        setSelectedImage(0);
+
+        // Handle Repo Size reset or setting from static data
+        if (product && product.size) {
+            setRepoSize(product.size);
+        } else {
+            setRepoSize(null);
+        }
+    }
 
     // Scroll to top on mount and set up slideshow
     useEffect(() => {
         window.scrollTo(0, 0);
-        setSelectedImage(0); // Reset image on product change
-        setRepoSize(null);
+
 
         // Slideshow interval
         let interval;
@@ -24,10 +38,8 @@ export const ProductDetail = () => {
             }, 3000); // Change every 3 seconds
         }
 
-        // Fetch Repo Size if githubRepo is defined
-        if (product && product.size) {
-            setRepoSize(product.size);
-        } else if (product && product.githubRepo) {
+        // Fetch Repo Size if githubRepo is defined (Async only)
+        if (product && !product.size && product.githubRepo) {
             fetch(`https://api.github.com/repos/${product.githubRepo}`)
                 .then(res => res.json())
                 .then(data => {

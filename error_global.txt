@@ -1,0 +1,18 @@
+
+> katalog@0.0.1 lint
+> eslint .
+
+
+C:\Users\haris\Desktop\katalog\src\pages\Admin_broken.jsx
+  298:18  error  'e' is defined but never used                                                                                                                                                                no-unused-vars
+  332:17  error  'setCaptureStatus' is not defined                                                                                                                                                            no-undef
+  338:17  error  'setCaptureStatus' is not defined                                                                                                                                                            no-undef
+  385:13  error  'setCaptureStatus' is not defined                                                                                                                                                            no-undef
+  388:13  error  'setCaptureStatus' is not defined                                                                                                                                                            no-undef
+  395:13  error  'setCaptureStatus' is not defined                                                                                                                                                            no-undef
+  420:5   error  React Hook "useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?  react-hooks/rules-of-hooks
+  609:30  error  'captureStatus' is not defined                                                                                                                                                               no-undef
+  611:38  error  'captureStatus' is not defined                                                                                                                                                               no-undef
+
+✖ 9 problems (9 errors, 0 warnings)
+

@@ -2,10 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ProductCard } from '../components/ProductCard';
 import { DeviceFrame } from '../components/DeviceFrame';
 import { Button } from '../components/ui/Button';
-import { Plus, Trash2, Copy, Check, Download, Loader2, Mail, MessageSquare } from 'lucide-react';
-import html2canvas from 'html2canvas';
-import JSZip from 'jszip';
-import { saveAs } from 'file-saver';
+import { Plus, Trash2, Copy, Check, Mail, MessageSquare } from 'lucide-react';
 import { SAVED_LINKS } from '../data/savedLinks';
 import { PRODUCTS } from '../data/products';
 import { supabase } from '../lib/supabaseClient';
@@ -111,8 +108,7 @@ export const Admin = () => {
     // Screenshot Tool State
     const [screenshotUrl, setScreenshotUrl] = useState('https://harisdevlab.online/loginhotspot3/login.html');
     const [iframeUrl, setIframeUrl] = useState('');
-    const [isCapturing, setIsCapturing] = useState(false);
-    const [captureStatus, setCaptureStatus] = useState('');
+
     const [deviceType, setDeviceType] = useState('mobile'); // 'mobile', 'tablet', 'laptop'
     const [zoomLevel, setZoomLevel] = useState(0.8);
     const iframeRef = useRef(null);
@@ -229,25 +225,7 @@ export const Admin = () => {
         setIframeUrl(screenshotUrl);
     };
 
-    const handleQuickLink = (filename) => {
-        let basePath = screenshotUrl;
-        if (basePath.includes('.html')) {
-            basePath = basePath.substring(0, basePath.lastIndexOf('/') + 1);
-        } else if (!basePath.endsWith('/')) {
-            basePath = basePath + '/';
-        }
-        const newUrl = `${basePath}${filename}`;
-        setScreenshotUrl(newUrl);
-        setIframeUrl(newUrl);
-    };
 
-    const handleBatchCapture = async () => {
-        alert("Automation temporarily disabled for safety checks.");
-        /*
-        // Automation logic here...
-        // For debugging, we disable the complex capture loop to verify basic UI first
-        */
-    };
 
     // --- License Handlers ---
     const handleGenerateKey = async () => {
@@ -486,9 +464,10 @@ export const Admin = () => {
                             <form onSubmit={handleLoadUrl} className="space-y-4">
                                 <div>
                                     <label className="block text-sm font-medium mb-1">Website URL</label>
-                                    <input value={screenshotUrl} onChange={(e) => setScreenshotUrl(e.target.value)} className="w-full border p-2 rounded-lg" placeholder="https://..." disabled={isCapturing} />
+                                    <label className="block text-sm font-medium mb-1">Website URL</label>
+                                    <input value={screenshotUrl} onChange={(e) => setScreenshotUrl(e.target.value)} className="w-full border p-2 rounded-lg" placeholder="https://..." />
                                 </div>
-                                <Button className="w-full justify-center" disabled={isCapturing}>Load Website</Button>
+                                <Button className="w-full justify-center">Load Website</Button>
                             </form>
                         </div>
 
