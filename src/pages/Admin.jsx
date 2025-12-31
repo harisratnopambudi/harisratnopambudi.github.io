@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ProductCard } from '../components/ProductCard';
 import { DeviceFrame } from '../components/DeviceFrame';
 import { Button } from '../components/ui/Button';
-import { Plus, Trash2, Copy, Check, Mail, MessageSquare } from 'lucide-react';
+import { Plus, Trash2, Copy, Check, Mail, MessageSquare, Loader2, Download } from 'lucide-react';
 import { SAVED_LINKS } from '../data/savedLinks';
 import { PRODUCTS } from '../data/products';
 import { supabase } from '../lib/supabaseClient';
