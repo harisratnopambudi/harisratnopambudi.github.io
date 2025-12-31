@@ -8,72 +8,7 @@ import { PRODUCTS } from '../data/products';
 import { supabase } from '../lib/supabaseClient';
 
 // CONFIGURATION & SECRETS
-const _0x4f2a = ['M', 'i', 'k', 'r', 'o', 't', 'i', 'k', 'A', 'd', 'm', 'i', 'n', 'S', 'e', 'c', 'r', 'e', 't', 'K', 'e', 'y', '2', '0', '2', '5', '!', '@', '#'];
-const SECRET_ADMIN = _0x4f2a.join('');
-const CHARS_UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-const CHARS_DIGITS = '0123456789';
-const CHARS_SYMBOLS = '@#$%&*-_+=!?';
-
-// CRYPTO UTILITIES
-async function hmacSHA256(message, key) {
-    const encoder = new TextEncoder();
-    const keyData = encoder.encode(key);
-    const msgData = encoder.encode(message);
-
-    const cryptoKey = await crypto.subtle.importKey(
-        'raw',
-        keyData,
-        { name: 'HMAC', hash: 'SHA-256' },
-        false,
-        ['sign']
-    );
-
-    const signature = await crypto.subtle.sign('HMAC', cryptoKey, msgData);
-    const hashArray = Array.from(new Uint8Array(signature));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-function shuffleString(str) {
-    const arr = str.split('');
-    for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr.join('');
-}
-
-function injectSymbols(hashStr) {
-    let result = '';
-    for (let i = 0; i < hashStr.length; i++) {
-        const char = hashStr[i].toUpperCase();
-        if (CHARS_UPPER.includes(char) || CHARS_DIGITS.includes(char)) {
-            result += char;
-        } else {
-            const hexVal = parseInt(char, 16);
-            result += CHARS_UPPER[hexVal % CHARS_UPPER.length];
-        }
-    }
-
-    const symbolCount = 4;
-    let finalArr = result.split('');
-    for (let i = 0; i < symbolCount; i++) {
-        const pos = Math.floor(Math.random() * finalArr.length);
-        const sym = CHARS_SYMBOLS[Math.floor(Math.random() * CHARS_SYMBOLS.length)];
-        finalArr.splice(pos, 0, sym);
-    }
-
-    return shuffleString(finalArr.join(''));
-}
-
-async function generateLicenseKey(username, appName) {
-    const timestamp = Date.now().toString();
-    const randomSalt = crypto.getRandomValues(new Uint8Array(8))
-        .reduce((s, b) => s + b.toString(16).padStart(2, '0'), '');
-
-    const input = username + appName + timestamp + randomSalt;
-    const hashBase = await hmacSHA256(input, SECRET_ADMIN);
-    return injectSymbols(hashBase).slice(0, 28).toUpperCase();
-}
+// CRYPTO UTILITIES REMOVED - Logic moved to Supabase RPC 'generate_license_key'
 
 export const Admin = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -235,8 +170,14 @@ export const Admin = () => {
         }
         setIsGenerating(true);
         try {
-            const key = await generateLicenseKey(emailData.buyerEmail, emailData.productName || 'LoginHotspot3');
-            setEmailData(prev => ({ ...prev, licenseKey: key }));
+            // Call Supabase RPC function (Server-Side Generation)
+            const { data, error } = await supabase.rpc('generate_license_key', {
+                buyer_email: emailData.buyerEmail,
+                product_name: emailData.productName || 'LoginHotspot3'
+            });
+
+            if (error) throw error;
+            setEmailData(prev => ({ ...prev, licenseKey: data }));
         } catch (error) {
             console.error("Key gen failed:", error);
             alert("Failed to generate key");
