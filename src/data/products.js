@@ -51,7 +51,7 @@ export const PRODUCTS = [
     {
         id: 1766940225962,
         title: "LoginHotspot3",
-        price: 50000,
+        price: 49900,
         originalPrice: 100000,
         category: "Captive Login",
         domain: "Offline License",
