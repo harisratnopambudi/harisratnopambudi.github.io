@@ -361,7 +361,9 @@ export const Admin = () => {
 
     const handleRecordTransaction = async () => {
         const productInfo = manageProducts.find(p => p.title === emailData.productName);
-        const price = productInfo ? productInfo.price : 0;
+        const price = productInfo ? parseFloat(productInfo.price) : 0;
+        const netPrice = Math.max(0, price - 3500); // Deduct service fee
+
         try {
             const { error } = await supabase
                 .from('transactions')
@@ -369,7 +371,7 @@ export const Admin = () => {
                     buyer_email: emailData.buyerEmail,
                     product_name: emailData.productName,
                     license_key: emailData.licenseKey,
-                    price: price,
+                    price: netPrice,
                     created_at: new Date().toISOString()
                 }]);
 
@@ -823,7 +825,7 @@ export const Admin = () => {
                                         // 2. Get Product Details
                                         const selectedProduct = manageProducts.find(p => p.title === emailData.productName);
                                         const price = selectedProduct ? parseFloat(selectedProduct.price) : 0;
-                                        const serviceFee = 3500;
+                                        const serviceFee = 2000;
                                         const total = price + serviceFee;
 
                                         const formattedPrice = new Intl.NumberFormat('id-ID').format(price);
@@ -838,7 +840,7 @@ export const Admin = () => {
                                             product_name: emailData.productName,
                                             product_image: imageUrl,
                                             product_price: formattedPrice,
-                                            service_fee: '3.500',
+                                            service_fee: '2.000',
                                             total_price: formattedTotal,
                                             license_key: emailData.licenseKey,
                                             download_link: emailData.fileLink || 'Link not provided',
