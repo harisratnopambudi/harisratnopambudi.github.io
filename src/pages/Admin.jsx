@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ProductCard } from '../components/ProductCard';
 import { DeviceFrame } from '../components/DeviceFrame';
 import { Button } from '../components/ui/Button';
-import { Plus, Trash2, Copy, Check, Mail, MessageSquare, Loader2, Download, Upload, Save, Edit, FileJson } from 'lucide-react';
+import { Plus, Trash2, Copy, Check, Mail, MessageSquare, Loader2, Download, Upload, Save, Edit, FileJson, Send } from 'lucide-react';
 // import { SAVED_LINKS } from '../data/savedLinks'; // REMOVED - Using Dynamic DB
-// import { PRODUCTS } from '../data/products'; // REMOVED
+import emailjs from '@emailjs/browser';
 import { supabase } from '../lib/supabaseClient';
 
 // CONFIGURATION & SECRETS
@@ -42,6 +42,7 @@ export const Admin = () => {
     });
     const [isGenerating, setIsGenerating] = useState(false); // Valid state
     const [isSaving, setIsSaving] = useState(false);
+    const [isSending, setIsSending] = useState(false);
     const [uploadingIndex, setUploadingIndex] = useState(null); // Track which index is uploading
     const [editingId, setEditingId] = useState(null); // ID if editing existing product
 
@@ -806,15 +807,58 @@ export const Admin = () => {
                             </div>
                             <div className="pt-4">
                                 <Button onClick={async () => {
-                                    await handleRecordTransaction();
-                                    const subject = encodeURIComponent(`License Key Activation - ${emailData.productName}`);
-                                    const body = encodeURIComponent(`Halo,\n\nTerima kasih telah membeli produk ${emailData.productName}!\n\nBerikut adalah detail lisensi Anda:\n\nProduct: ${emailData.productName}\nLicense Key: ${emailData.licenseKey}\nDownload Link: ${emailData.fileLink}\n\nPanduan Instalasi:\n1. Download file dari link di atas.\n2. Ekstrak file ZIP.\n3. Masukkan License Key pada file config.js atau saat diminta sistem.\n\nJika ada pertanyaan, silakan balas email ini.\n\nSalam,\nHaris DevLab`);
-                                    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${emailData.buyerEmail}&su=${subject}&body=${body}`;
-                                    window.open(gmailUrl, '_blank');
-                                }} className="w-full py-4 text-lg justify-center bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 shadow-lg shadow-red-500/30" disabled={!emailData.buyerEmail || !emailData.productName}>
-                                    <Mail className="mr-2" /> Open in Gmail
+                                    if (!emailData.buyerEmail || !emailData.productName) return;
+
+                                    // Simple validation for keys
+                                    if (!import.meta.env.VITE_EMAILJS_SERVICE_ID || import.meta.env.VITE_EMAILJS_SERVICE_ID.includes('YOUR_')) {
+                                        alert('⚠️ Please configure EmailJS keys in .env file first!');
+                                        return;
+                                    }
+
+                                    setIsSending(true);
+                                    try {
+                                        // 1. Record Transaction first
+                                        await handleRecordTransaction();
+
+                                        // 2. Get Product Details
+                                        const selectedProduct = manageProducts.find(p => p.title === emailData.productName);
+                                        const price = selectedProduct ? selectedProduct.price : 0;
+                                        const formattedPrice = new Intl.NumberFormat('id-ID').format(price);
+                                        const imageUrl = selectedProduct ? (selectedProduct.image_url || selectedProduct.img) : 'https://placehold.co/100';
+
+                                        // 2. Prepare Template Params
+                                        const templateParams = {
+                                            buyer_email: emailData.buyerEmail,
+                                            order_id: `ORD-${Date.now().toString().slice(-6)}`, // Generate simple Order ID
+                                            product_name: emailData.productName,
+                                            product_image: imageUrl,
+                                            product_price: formattedPrice,
+                                            total_price: formattedPrice,
+                                            license_key: emailData.licenseKey,
+                                            download_link: emailData.fileLink || 'Link not provided',
+                                            site_link: window.location.origin
+                                        };
+
+                                        // 3. Send Email
+                                        await emailjs.send(
+                                            import.meta.env.VITE_EMAILJS_SERVICE_ID,
+                                            import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+                                            templateParams,
+                                            import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+                                        );
+
+                                        alert('✅ Email sent successfully!');
+                                    } catch (error) {
+                                        console.error('Email sending failed:', error);
+                                        alert('❌ Failed to send email: ' + (error.text || error.message));
+                                    } finally {
+                                        setIsSending(false);
+                                    }
+                                }} className="w-full py-4 text-lg justify-center bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-500/30" disabled={isSending || !emailData.buyerEmail || !emailData.productName}>
+                                    {isSending ? <Loader2 className="animate-spin mr-2" /> : <Send className="mr-2" />}
+                                    {isSending ? 'Sending...' : 'Send Email Now'}
                                 </Button>
-                                <p className="text-center text-xs text-gray-400 mt-2">This will open a new tab with your Gmail composed and ready to send.</p>
+                                <p className="text-center text-xs text-gray-400 mt-2">Make sure EmailJS credentials are set in .env file.</p>
                             </div>
                         </div>
                     </div>
