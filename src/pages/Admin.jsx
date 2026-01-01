@@ -797,7 +797,7 @@ export const Admin = () => {
                             <div>
                                 <label className="block text-sm font-medium mb-1">License Key</label>
                                 <div className="flex gap-2 relative">
-                                    <input name="licenseKey" value={emailData.licenseKey} onChange={(e) => setEmailData({ ...emailData, licenseKey: e.target.value })} className="w-full border p-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono text-blue-600 flex-1" placeholder="XXXX-XXXX-XXXX-XXXX" />
+                                    <input name="licenseKey" value={emailData.licenseKey} readOnly className="w-full border p-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono text-blue-600 flex-1 bg-gray-50" placeholder="XXXX-XXXX-XXXX-XXXX" />
                                     <Button onClick={handleGenerateKey} disabled={isGenerating || !emailData.buyerEmail} className="bg-indigo-600 hover:bg-indigo-700 whitespace-nowrap" title="Auto-generate based on Email">
                                         {isGenerating ? <Loader2 className="animate-spin" size={18} /> : '⚡ Generate'}
                                     </Button>
