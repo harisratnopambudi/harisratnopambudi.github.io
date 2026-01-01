@@ -822,18 +822,24 @@ export const Admin = () => {
 
                                         // 2. Get Product Details
                                         const selectedProduct = manageProducts.find(p => p.title === emailData.productName);
-                                        const price = selectedProduct ? selectedProduct.price : 0;
+                                        const price = selectedProduct ? parseFloat(selectedProduct.price) : 0;
+                                        const serviceFee = 3500;
+                                        const total = price + serviceFee;
+
                                         const formattedPrice = new Intl.NumberFormat('id-ID').format(price);
+                                        const formattedTotal = new Intl.NumberFormat('id-ID').format(total);
+
                                         const imageUrl = selectedProduct ? (selectedProduct.image_url || selectedProduct.img) : 'https://placehold.co/100';
 
                                         // 2. Prepare Template Params
                                         const templateParams = {
                                             buyer_email: emailData.buyerEmail,
-                                            order_id: `ORD-${Date.now().toString().slice(-6)}`, // Generate simple Order ID
+                                            order_id: `ORD-${Date.now().toString().slice(-6)}`,
                                             product_name: emailData.productName,
                                             product_image: imageUrl,
                                             product_price: formattedPrice,
-                                            total_price: formattedPrice,
+                                            service_fee: '3.500',
+                                            total_price: formattedTotal,
                                             license_key: emailData.licenseKey,
                                             download_link: emailData.fileLink || 'Link not provided',
                                             site_link: window.location.origin
